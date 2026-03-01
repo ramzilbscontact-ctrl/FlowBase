@@ -7,15 +7,15 @@ from decouple import config
 
 DEBUG = False
 
-# Railway injects the public URL as RAILWAY_PUBLIC_DOMAIN
+# Platform-injected public hostnames
 RAILWAY_DOMAIN = config('RAILWAY_PUBLIC_DOMAIN', default='')
-CUSTOM_DOMAIN = config('CUSTOM_DOMAIN', default='')
+CUSTOM_DOMAIN   = config('CUSTOM_DOMAIN', default='')
+RENDER_HOSTNAME = config('RENDER_EXTERNAL_HOSTNAME', default='')  # Render auto-injects this
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-if RAILWAY_DOMAIN:
-    ALLOWED_HOSTS.append(RAILWAY_DOMAIN)
-if CUSTOM_DOMAIN:
-    ALLOWED_HOSTS.append(CUSTOM_DOMAIN)
+for _host in [RAILWAY_DOMAIN, CUSTOM_DOMAIN, RENDER_HOSTNAME]:
+    if _host:
+        ALLOWED_HOSTS.append(_host)
 
 # ── CORS ──────────────────────────────────────────────────────────────────────
 CORS_ALLOWED_ORIGINS = [o.strip() for o in config(
