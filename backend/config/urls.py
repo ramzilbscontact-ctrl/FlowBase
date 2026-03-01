@@ -1,6 +1,13 @@
 from django.urls import path, include
+from django.http import JsonResponse
+
+
+def health(request):
+    return JsonResponse({"status": "ok"})
+
 
 urlpatterns = [
+    path('api/health/', health),
     # Auth
     path('api/auth/', include('apps.authentication.urls')),
     # CRM
