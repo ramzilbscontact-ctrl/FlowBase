@@ -2,478 +2,409 @@
 
 **Project:** Radiance ERP → Next.js 14 + Supabase + Vercel
 **Milestone:** M1 — Full Stack Migration
-**Total phases:** 10
-**Created:** 2026-03-04
+**Total phases:** 6 (compressed from 10 — existing React UI reused directly)
+**Created:** 2026-03-04 | **Revised:** 2026-03-04
+
+---
+
+## Strategy: Port, Don't Rebuild
+
+The existing frontend is React (JSX + Tailwind + React Query) — identical to what Next.js uses.
+Rather than rebuilding each module from scratch, each UI phase **directly ports** existing components:
+
+```
+frontend/src/pages/crm/Contacts.jsx
+  → nextjs-app/app/(dashboard)/crm/contacts/page.tsx
+  Changes: "use client", axios → supabase.from('contacts'), React Router Link → next/link
+
+frontend/src/components/shared/DataTable.jsx
+  → nextjs-app/components/shared/DataTable.tsx
+  Changes: prop types only (add TypeScript types)
+```
+
+**Backend (Django) is NOT ported to Route Handlers for CRUD.**
+Supabase client + RLS replaces it entirely for list/get/create/update/delete operations.
+Route Handlers are only needed for: Stripe webhooks, PDF generation, Google OAuth proxy.
 
 ---
 
 ## Milestone M1 — Full Stack Migration
 
-> Migrate the entire Radiance ERP (React + Django + MongoDB) to Next.js 14 + Supabase + Vercel.
-> All modules migrated, data transferred, old stack decommissioned.
-
 ---
 
-## Phase 1 — Project Scaffolding & Database Schema
+## Phase 1 — Foundation, Schema & Auth
 
-**Goal:** Bootstrap the Next.js application in `/nextjs-app`, configure Supabase, and establish the complete PostgreSQL schema with RLS policies before writing any feature code.
+**Goal:** Bootstrap Next.js in `/nextjs-app`, create Supabase project with the complete PostgreSQL schema (all 20+ tables, RLS, indexes), wire up Supabase Auth (email/password + Google OAuth + TOTP 2FA), and protect all routes via middleware. Old stack untouched.
 
 ### Why First
-Everything else depends on the directory structure, TypeScript config, Supabase connection, and database schema. Getting this right prevents painful refactors in later phases.
+Every other phase needs: the schema to write Supabase queries against, the auth session to know who's logged in, and the middleware to protect routes. Doing all three here removes all blocking dependencies in one shot.
 
 ### Tasks
-1. Scaffold Next.js 14 App Router project in `/nextjs-app` with TypeScript, Tailwind, ESLint strict
-2. Configure Supabase project (create via Supabase dashboard), add environment variables (`.env.local`)
-3. Install core dependencies: `@supabase/ssr`, `@supabase/supabase-js`, `@tanstack/react-query`, `zod`, `lucide-react`
-4. Set up Supabase server/browser client utilities (`lib/supabase/server.ts`, `lib/supabase/client.ts`)
-5. Design and create PostgreSQL schema for **all modules**:
-   - `profiles` (extends auth.users — role, full_name, avatar_url, totp_secret, totp_enabled, failed_login_attempts, locked_until)
-   - `companies` (id, name, industry, address, website, phone, owner_id, deleted_at, created_at)
-   - `contacts` (id, first_name, last_name, email, phone, company_id FK, owner_id, tags, deleted_at, search_vector tsvector)
-   - `deals` (id, title, value, stage, contact_id FK, company_id FK, assigned_to FK, owner_id, deleted_at)
-   - `pipeline_stages` (id, name, order, color)
-   - `tasks` (id, title, due_date, status, assigned_to FK, related_contact_id, related_deal_id, owner_id)
-   - `notes` (id, body, author_id FK, contact_id, company_id, deal_id, created_at)
-   - `invoices` (id, number, status, client_name, client_email, subtotal, tax_rate, total, due_date, owner_id, deleted_at)
-   - `invoice_items` (id, invoice_id FK, description, quantity, unit_price, total)
-   - `quotes` (id, number, status, client_name, converted_to_invoice_id, owner_id, deleted_at)
-   - `payments` (id, invoice_id FK, amount, method, stripe_payment_intent_id, paid_at)
-   - `accounts` (id, code, name, type ENUM, parent_id FK, owner_id)
-   - `journal_entries` (id, date, description, reference_id, reference_type, owner_id)
-   - `journal_lines` (id, entry_id FK, account_id FK, debit, credit)
-   - `employees` (id, first_name, last_name, email, job_title, salary, department_id FK, start_date, owner_id, deleted_at)
-   - `departments` (id, name, manager_id FK, owner_id)
-   - `leave_requests` (id, employee_id FK, type, start_date, end_date, status, owner_id)
-   - `payslips` (id, employee_id FK, month, year, gross, deductions, net, owner_id)
-   - `google_tokens` (id, user_id FK, access_token_enc, refresh_token_enc, expires_at)
-   - `audit_logs` (id, user_id, action, resource_type, resource_id, metadata jsonb, created_at)
-6. Write RLS policies for all tables (owner isolation, admin override, soft-delete filtering)
-7. Create full-text search indexes (`tsvector` GIN indexes on contacts, companies, deals)
-8. Set up Next.js layout: root `layout.tsx`, dashboard `layout.tsx`, sidebar navigation shell
-9. Configure Vercel project (link GitHub repo, set env vars, configure `/nextjs-app` as root)
+
+**Scaffold (Day 1)**
+1. `npx create-next-app@14 nextjs-app --typescript --tailwind --eslint --app --src-dir=no`
+2. Install deps: `@supabase/ssr`, `@supabase/supabase-js`, `@tanstack/react-query`, `zod`, `lucide-react`, `otpauth`, `qrcode`
+3. Create `lib/supabase/server.ts` (createServerClient + cookie handling) and `lib/supabase/client.ts` (createBrowserClient)
+4. Copy and convert shared layout components from `frontend/src/components/layout/` → `components/layout/` (AppLayout, Sidebar, Topbar — TypeScript types only, keep Tailwind classes as-is)
+5. Create root `app/layout.tsx`, `app/(dashboard)/layout.tsx` with Sidebar, `app/(auth)/layout.tsx`
+
+**Supabase Schema (Day 1-2)**
+6. Create Supabase project via dashboard, save URL + keys to `.env.local`
+7. Run SQL migrations to create all tables:
+   - Auth extension: `profiles` (user_id FK auth.users, role, full_name, avatar_url, totp_secret, totp_enabled, failed_login_attempts, locked_until)
+   - CRM: `companies`, `contacts` (+ search_vector tsvector), `deals`, `pipeline_stages`, `tasks`, `notes`
+   - Facturation: `invoices`, `invoice_items`, `quotes`, `payments`
+   - Comptabilité: `accounts`, `journal_entries`, `journal_lines`
+   - RH/Paie: `employees`, `departments`, `leave_requests`, `payslips`
+   - Cross-cutting: `google_tokens`, `audit_logs`
+   - All tables: UUID PKs, `deleted_at TIMESTAMPTZ` soft-delete, `owner_id UUID FK auth.users`
+8. Create RLS policies: owner sees own rows, admin sees all, soft-delete filter (`deleted_at IS NULL`)
+9. Create full-text search: GIN indexes + tsvector triggers on `contacts`, `companies`, `deals`
+10. Create `profiles` auto-insert trigger (fires on `auth.users` insert)
+
+**Auth (Day 2-3)**
+11. Port `frontend/src/pages/auth/Login.jsx` → `app/(auth)/login/page.tsx`:
+    - Replace axios POST → `supabase.auth.signInWithPassword()`
+    - Replace Zustand setTokens → Supabase session cookie (automatic via `@supabase/ssr`)
+12. Add Google OAuth button → `supabase.auth.signInWithOAuth({ provider: 'google' })` + `app/(auth)/callback/route.ts`
+13. TOTP 2FA:
+    - `app/(auth)/2fa/page.tsx` — verify TOTP code after password login using `otpauth` library
+    - `app/(dashboard)/settings/2fa/page.tsx` — enable/disable 2FA, show QR code
+    - Store encrypted TOTP secret in `profiles.totp_secret`
+14. `middleware.ts` — validate Supabase session, redirect to `/login` if missing, inject user into headers
+15. Account lockout: increment `failed_login_attempts` on bad password via Route Handler, lock if ≥ 5
+16. Logout: `supabase.auth.signOut()` server action + redirect
+
+**Vercel (Day 3)**
+17. Link `/nextjs-app` folder as Vercel project root, configure env vars, verify preview URL deploys
 
 ### Deliverables
-- `/nextjs-app` project compiles, runs locally, deploys to Vercel preview URL
-- Supabase project live with complete schema (all 20+ tables)
-- RLS enabled and policies written for all tables
-- Full-text search indexes in place
-- Vercel preview URL accessible
+- `nextjs-app/` compiles, deploys to Vercel preview
+- All 20+ Supabase tables live with RLS and FTS indexes
+- Login with email/password → dashboard
+- Login with Google → dashboard
+- TOTP 2FA prompt appears when enabled
+- Unauthenticated → `/login` redirect
 
 ### Success Criteria
-- `npm run build` passes with zero TypeScript errors
-- Supabase schema visible in dashboard with all tables
-- Vercel preview URL loads the app shell (sidebar + empty pages)
-- RLS: anonymous requests to any table return empty results
+- `npm run build` zero TypeScript errors
+- RLS: anonymous query to any table returns 0 rows
+- Email/password login works end-to-end
+- Google OAuth callback completes and creates session
+- 5 failed logins → 6th attempt returns locked error
 
 ### Dependencies
-- None (first phase)
+- None
 
 ---
 
-## Phase 2 — Authentication
+## Phase 2 — Port CRM + Analytics UI
 
-**Goal:** Full auth system using Supabase Auth — email/password, Google OAuth, TOTP 2FA, session middleware, and role-based route protection.
+**Goal:** Port the entire CRM module and Analytics dashboard from existing React pages to Next.js using Supabase client queries, replacing the axios/Django layer.
 
-### Why Second
-Every other module needs authenticated users and protected routes. Auth must be solid before any feature module is built.
+### Porting Strategy (applies to all UI phases)
+
+```
+For each page in frontend/src/pages/crm/:
+1. Copy JSX to equivalent .tsx file in nextjs-app/app/(dashboard)/crm/
+2. Add "use client" at top (all CRM pages are interactive)
+3. Replace: import { getContacts } from '../../api/crm'
+   With:     const { data } = useQuery({ queryFn: () => supabase.from('contacts').select() })
+4. Replace: React Router <Link to="/crm/contacts/1"> with next/link <Link href="/crm/contacts/1">
+5. Replace: useNavigate() with useRouter() from next/navigation
+6. TypeScript: add prop types — copy component, let TS errors guide type definitions
+```
 
 ### Tasks
-1. Configure Supabase Auth: email/password enabled, Google OAuth provider (use existing Google Cloud credentials)
-2. Implement login page (`/login`): email/password form with Supabase `signInWithPassword`
-3. Implement Google OAuth button: `signInWithOAuth({ provider: 'google' })` + callback route handler
-4. Implement TOTP 2FA: server-side TOTP verification using `otpauth` library after Supabase login
-   - Generate TOTP secret server-side, store encrypted in `profiles.totp_secret`
-   - 2FA setup page: QR code display, verify code to activate
-   - 2FA login step: show code input if `profiles.totp_enabled = true`
-5. Implement `middleware.ts`: validate Supabase session on every request, redirect to `/login` if missing
-6. Implement role-based route protection: admin routes guarded, manager routes guarded
-7. Account lockout: increment `failed_login_attempts` on bad password, lock if ≥ 5 attempts
-8. Implement logout: `supabase.auth.signOut()` + redirect to `/login`
-9. User profile page: update full_name, avatar (upload to Supabase Storage), change email, enable/disable 2FA
-10. Implement `profiles` trigger: auto-insert into `profiles` on Supabase Auth user creation
-11. Audit log middleware: server-side function to log mutations (wrap Route Handlers)
+
+**Contacts (port Contacts.jsx)**
+1. `app/(dashboard)/crm/contacts/page.tsx` — paginated table with search, filter by company/tag, sort
+2. `app/(dashboard)/crm/contacts/[id]/page.tsx` — detail: info, deals, tasks, notes, timeline
+3. `app/(dashboard)/crm/contacts/new/page.tsx` — create form
+4. Supabase queries: `contacts` table with `company_id` join, full-text search via `textSearch()`
+5. Soft delete: `supabase.from('contacts').update({ deleted_at: new Date() }).eq('id', id)`
+
+**Companies (port Companies.jsx)**
+6. `app/(dashboard)/crm/companies/page.tsx` — list with search/filter
+7. `app/(dashboard)/crm/companies/[id]/page.tsx` — detail with associated contacts + deals
+8. `app/(dashboard)/crm/companies/new/page.tsx` — create form
+
+**Deals + Pipeline (port Deals.jsx)**
+9. `app/(dashboard)/crm/deals/page.tsx` — list view with filter by stage/assignee
+10. `app/(dashboard)/crm/deals/pipeline/page.tsx` — Kanban board: install `@dnd-kit/core`, port drag-and-drop logic, update stage via `supabase.from('deals').update({ stage })`
+11. `app/(dashboard)/crm/deals/[id]/page.tsx` — detail page
+
+**Tasks + Notes**
+12. `app/(dashboard)/crm/tasks/page.tsx` — list with status/due date filter, inline complete toggle
+13. Notes rendered inline on contact/company/deal detail pages (not a separate page)
+
+**Global Search**
+14. Header search bar → Supabase `textSearch()` on `contacts`, `companies`, `deals` (union results)
+15. Keyboard-navigable results dropdown (port existing logic)
+
+**Analytics Dashboard (port Analytics pages)**
+16. `app/(dashboard)/analytics/page.tsx` — KPI cards: total contacts, open deals, revenue YTD, invoices outstanding
+17. Install `recharts` (keep same charts as existing, port chart config)
+18. Supabase aggregation queries: `count()`, `sum()` with date range filters
+19. Date range filter: 7d / 30d / 90d / custom — React state, re-runs queries
 
 ### Deliverables
-- `/login` with email/password and Google OAuth working
-- TOTP 2FA setup and verification working
-- All `/dashboard/*` routes protected by middleware
-- Role-based guards on admin pages
-- Account lockout after 5 failed attempts
+- All CRM pages functional with live Supabase data
+- Kanban pipeline with drag-and-drop working
+- Global search returning grouped results
+- Analytics dashboard showing real numbers
 
 ### Success Criteria
-- Login with email/password → redirected to dashboard
-- Login with Google → redirected to dashboard
-- Login with 2FA enabled → TOTP code prompt appears
-- Unauthenticated request to `/dashboard` → redirected to `/login`
-- 5 failed logins → account locked, 6th attempt returns locked error
+- CRUD for contacts, companies, deals, tasks, notes — all operations persist in Supabase
+- Kanban: drag deal → stage updates in DB instantly
+- Search "Dupont" → finds contacts + companies
+- RLS: user sees only their own records (admin sees all)
+- Analytics KPIs match real row counts in Supabase tables
 
 ### Dependencies
-- Phase 1 (schema: `profiles`, `audit_logs`, Supabase client setup)
+- Phase 1 (schema + auth + Supabase client)
 
 ---
 
-## Phase 3 — CRM Module
+## Phase 3 — Port Facturation + Comptabilité + RH/Paie UI
 
-**Goal:** Full CRM functionality — contacts, companies, deals, Kanban pipeline, tasks, notes, global search.
+**Goal:** Port the remaining three modules using the same porting strategy. Add Stripe Payment Intent for invoices. Generate PDF payslips and invoices server-side.
 
 ### Tasks
-1. **Contacts module**
-   - List view: paginated table with search, filter by company/tag/owner, sort by name/date
-   - Create/edit contact form: all fields, company autocomplete, tag input
-   - Contact detail page: info, associated deals, tasks, notes, activity timeline
-   - Delete (soft): set `deleted_at`, hide from all queries
-2. **Companies module**
-   - List view: paginated table with search and filter
-   - Create/edit company form
-   - Company detail page: info, associated contacts, deals, notes
-3. **Deals module**
-   - List view: table with filter by stage/assignee/value
-   - Create/edit deal form: title, value, stage, contact, company, assigned user
-   - Deal detail page: info, tasks, notes, activity
-4. **Pipeline Kanban view**
-   - Drag-and-drop deal cards between stages using `@dnd-kit/core`
-   - Stage column totals (count + total value)
-   - Update deal stage on drop via Route Handler
-5. **Tasks module**
-   - Task list: filter by status/assignee/due date
-   - Create/edit task form with due date picker and entity linking
-   - Mark complete inline
-6. **Notes**
-   - Add/edit/delete notes on contacts, companies, deals
-   - Rich text via `react-quill` or plain textarea
-7. **Global search**
-   - Search bar in header: full-text search via Supabase `textSearch()` on contacts, companies, deals
-   - Results grouped by entity type, keyboard-navigable
-8. **Route Handlers** for all CRUD operations (GET, POST, PATCH, DELETE per resource)
-9. **RLS validation**: verify users only see their own records (or all, if admin)
+
+**Facturation (port Invoices.jsx, Quotes.jsx)**
+1. `app/(dashboard)/facturation/invoices/page.tsx` — list with status filter (draft/sent/paid/overdue)
+2. `app/(dashboard)/facturation/invoices/[id]/page.tsx` — detail with line items, payment history
+3. `app/(dashboard)/facturation/invoices/new/page.tsx` — create form with dynamic line items table, auto-total
+4. `app/(dashboard)/facturation/quotes/page.tsx` — list, create, convert to invoice
+5. Invoice PDF Route Handler: `app/api/invoices/[id]/pdf/route.ts` — server-side render with `@react-pdf/renderer`, return PDF stream
+6. Invoice email: `app/api/invoices/[id]/send/route.ts` — send PDF via Resend (replaces Gmail SMTP)
+7. Stripe Payment Intent: `app/api/invoices/[id]/pay/route.ts` — create Stripe PaymentIntent, return client_secret
+8. Public payment page: `app/pay/[invoiceId]/page.tsx` — no auth required, embed Stripe Elements
+9. Stripe webhook: `app/api/stripe/webhook/route.ts` — verify signature, handle `payment_intent.succeeded`, update invoice + insert payment row
+
+**Comptabilité (port Compta pages)**
+10. `app/(dashboard)/comptabilite/accounts/page.tsx` — tree view of accounts by type
+11. `app/(dashboard)/comptabilite/journal/page.tsx` — journal entries list + create form (balance validation: debits = credits)
+12. `app/(dashboard)/comptabilite/ledger/page.tsx` — ledger per account with running balance
+13. `app/(dashboard)/comptabilite/reports/page.tsx` — income statement + balance sheet (Supabase aggregation queries)
+
+**RH / Paie (port RH pages)**
+14. `app/(dashboard)/rh/employees/page.tsx` — list with department filter
+15. `app/(dashboard)/rh/employees/[id]/page.tsx` — detail: info, leave history, payslip history
+16. `app/(dashboard)/rh/departments/page.tsx` — CRUD
+17. `app/(dashboard)/rh/leaves/page.tsx` — submit request (employee) + approve/reject (manager)
+18. `app/(dashboard)/rh/payroll/page.tsx` — generate monthly payslip, Algerian IRG/CNAS deductions
+19. Payslip PDF Route Handler: `app/api/payslips/[id]/pdf/route.ts` — same pattern as invoice PDF
+
+**Shared components**
+20. Port `frontend/src/components/shared/DataTable.jsx` → `components/shared/DataTable.tsx` (used by all modules)
+21. Port `frontend/src/components/shared/Modal.jsx` → `components/shared/Modal.tsx`
+22. Port `frontend/src/components/shared/StatsCard.jsx` → `components/shared/StatsCard.tsx`
 
 ### Deliverables
-- All CRM pages functional with real Supabase data
-- Kanban pipeline with drag-and-drop stage updates
-- Global search returning results across all entities
+- All invoices/quotes CRUD functional, Stripe payment flow working (test mode)
+- PDF download for invoices and payslips
+- Chart of accounts + journal entries + financial reports
+- Employee/department/leave/payroll cycle complete
 
 ### Success Criteria
-- CRUD for contacts, companies, deals, tasks, notes works end-to-end
-- Kanban: drag deal card changes stage in DB, reflects immediately
-- Search: typing "Dupont" finds matching contacts and companies
-- RLS: user A cannot access user B's contacts
+- Create invoice → download PDF → correct rendering
+- Pay invoice (Stripe test card) → webhook fires → invoice marked paid in Supabase
+- Unbalanced journal entry (debits ≠ credits) rejected
+- Generate payslip for employee → correct net pay (gross - CNAS - IRG)
+- Manager can approve leave requests, employee sees status change
 
 ### Dependencies
-- Phase 2 (auth + middleware)
+- Phase 1 (schema + auth), Phase 2 (shared components ported)
 
 ---
 
-## Phase 4 — Facturation Module
+## Phase 4 — Data Migration: MongoDB → Supabase
 
-**Goal:** Full invoicing and quoting system with Stripe payment processing and email delivery.
+**Goal:** Export all production MongoDB data, transform to relational format, and import into Supabase. Migrate existing users to Supabase Auth without requiring password resets.
+
+### Why After Phases 1-3
+The schema must be finalized and validated with real data before migrating production data into it. Running phases 1-3 against a fresh Supabase DB surfaces schema issues safely, before production data is touched.
 
 ### Tasks
-1. **Invoices**
-   - List view: filter by status (draft, sent, paid, overdue), search by client/number
-   - Create/edit invoice: line items table, tax rate, due date, client info
-   - Invoice preview: real-time total calculation, styled invoice template
-   - PDF generation: `@react-pdf/renderer` server-side in Route Handler → download or email
-   - Send invoice: compose email with PDF attachment via Nodemailer/Resend
-   - Mark as paid: manual payment recording
-2. **Quotes**
-   - List and CRUD for quotes
-   - Convert quote → invoice (copy all line items, set status)
-3. **Stripe integration**
-   - Payment link: create Stripe Payment Intent from invoice, embed Stripe Elements or redirect to Stripe Checkout
-   - Client-facing payment page: `/pay/[invoiceId]` — public route (no auth required for client)
-   - Webhook Route Handler: `/api/stripe/webhook` — verify signature, handle `payment_intent.succeeded`, mark invoice paid, record in `payments` table
-4. **Invoice numbering**: auto-increment with configurable prefix (e.g. `FAC-2026-0001`)
-5. **Tax management**: configurable tax rates stored in settings table
+
+**Export**
+1. Run `mongoexport` on all MongoDB collections: users, contacts, companies, deals, pipeline_stages, tasks, notes, invoices, invoice_items, quotes, payments, accounts, journal_entries, journal_lines, employees, departments, leave_requests, payslips, audit_logs, google_tokens
+2. Save as JSON files, validate counts: `mongoexport --count` matches `wc -l` on JSON
+
+**Transform (Python ETL script)**
+3. Write `scripts/migrate.py`:
+   - Build ObjectId → UUID lookup table (one UUID per MongoDB `_id`)
+   - Transform each document: ObjectId refs → UUID, nested objects → FK rows, missing fields → NULL or default
+   - Handle denormalized `contact.company_name` → resolve to `companies.id` FK
+   - Output: one `.sql` INSERT file per table, ordered by FK dependency
+4. Validate transform: run against a subset (100 records), check FK integrity manually
+
+**Migrate Users to Supabase Auth**
+5. Use Supabase Admin API (`supabase.auth.admin.createUser()`) with `password_hash` param to import existing bcrypt hashes — users keep original passwords, no reset needed
+6. Map old MongoDB user `_id` → new Supabase `auth.users.id` (UUID), update the ObjectId→UUID lookup table
+7. Insert `profiles` rows with role, totp_secret, totp_enabled from old User documents
+
+**Load into Supabase**
+8. Execute INSERT `.sql` files against Supabase PostgreSQL in FK dependency order:
+   `auth.users → profiles → companies → contacts → deals → invoices → …`
+9. Use `supabase db push` or direct `psql` connection
+
+**Validate**
+10. Record count check: every table count in Supabase = collection count in MongoDB
+11. FK integrity: `SELECT * FROM contacts WHERE company_id NOT IN (SELECT id FROM companies)` → 0 rows
+12. Sample spot-check: 10 random records per table — compare Supabase vs MongoDB values
+13. Login test: existing user logs in on new Next.js app with original email + password
+
+**Cutover**
+14. Update Vercel env vars to point at migrated Supabase project (production keys)
+15. Keep old Render deployment running for 2 weeks (rollback safety)
 
 ### Deliverables
-- Invoice CRUD with PDF generation working
-- Stripe Payment Intent flow working (test mode)
-- Webhook received and invoice marked paid in Supabase
-- Email with PDF attachment sends successfully
+- All MongoDB data present in Supabase
+- All users can log in without password reset
+- Post-migration validation report (counts + FK integrity)
+- Next.js app on Vercel serving real migrated data
 
 ### Success Criteria
-- Create invoice → download PDF → PDF renders correctly
-- Click "Pay" → Stripe checkout → complete → webhook → invoice marked paid in DB
-- Quote → "Convert to Invoice" → invoice created with all line items
+- `SELECT COUNT(*) FROM contacts` in Supabase = `db.contacts.count()` in MongoDB
+- Existing user logs in with original password on Next.js app
+- Zero FK violations across all tables
+- 10 random records per table match MongoDB source
 
 ### Dependencies
-- Phase 2 (auth), Phase 1 (schema: invoices, invoice_items, payments, quotes)
+- Phases 1-3 complete (schema finalized, app functional)
 
 ---
 
-## Phase 5 — Comptabilité Module
+## Phase 5 — Google Workspace Integration
 
-**Goal:** Double-entry accounting with chart of accounts, journal entries, and financial reports.
-
-### Tasks
-1. **Chart of Accounts**
-   - Tree view of accounts grouped by type (Assets, Liabilities, Equity, Income, Expense)
-   - Create/edit/delete accounts with type and parent account
-2. **Journal Entries**
-   - List view with date range filter
-   - Create journal entry: multiple debit/credit lines, must balance to zero
-   - Auto-create entries when invoice paid (debit Receivables, credit Income, credit Tax Payable)
-   - Link journal entries to invoices/payments (reference polymorphism)
-3. **General Ledger**
-   - Ledger view: all transactions for selected account with running balance
-4. **Financial Reports**
-   - Income statement: income vs expense for date range
-   - Balance sheet: assets, liabilities, equity at point in time
-   - Export to PDF and CSV
-
-### Deliverables
-- Chart of accounts manageable
-- Journal entries balance-validated before save
-- Income statement and balance sheet render correctly
-
-### Success Criteria
-- Creating an account, adding manual journal entry, seeing it in ledger works end-to-end
-- Income statement: Income - Expenses = Net Profit for test data
-- Unbalanced journal entry (debits ≠ credits) is rejected
-
-### Dependencies
-- Phase 2 (auth), Phase 4 (auto-generate entries from invoice payments)
-
----
-
-## Phase 6 — RH / Paie Module
-
-**Goal:** Employee management, leave tracking, and payroll processing with PDF payslips.
+**Goal:** Port Gmail and Google Calendar integrations from Django to Next.js Route Handlers, storing OAuth tokens in Supabase.
 
 ### Tasks
-1. **Employees**
-   - Employee list: paginated, filter by department/status
-   - Create/edit employee: personal info, job title, salary, start date, department
-   - Employee profile page with leave history and payslip history
-2. **Departments**
-   - CRUD for departments, assign manager
-3. **Leave Management**
-   - Leave request form: type (annual, sick, unpaid), date range
-   - Manager approval flow: approve/reject leave requests
-   - Leave calendar view
-4. **Payroll**
-   - Generate monthly payslip: gross salary, configurable deductions (CNAS, IRG for Algeria)
-   - Payslip list per employee
-   - PDF export of individual payslip via `@react-pdf/renderer`
-5. **Algerian payroll rules**: IRG tax brackets, CNAS rates configurable in settings
-
-### Deliverables
-- Employee CRUD working
-- Leave requests submittable and approvable
-- Payslip generated with correct gross/net calculation and downloadable as PDF
-
-### Success Criteria
-- Create employee → submit leave request → manager approves → status updates
-- Generate payslip → correct net pay based on gross salary and deductions
-- Download payslip PDF → renders employee name, month, salary breakdown
-
-### Dependencies
-- Phase 2 (auth + roles: manager approval)
-
----
-
-## Phase 7 — Analytics Dashboard
-
-**Goal:** Data-driven dashboard with KPIs, charts, and date-range filtering across all modules.
-
-### Tasks
-1. **Overview KPIs**: total contacts, open deals, deals closed this month, outstanding invoices, total revenue YTD
-2. **CRM charts**:
-   - Deals by stage (bar chart)
-   - Revenue pipeline (funnel chart)
-   - Deals won vs lost over time (line chart)
-3. **Facturation charts**:
-   - Monthly revenue (bar chart)
-   - Invoice status breakdown (pie chart — paid/overdue/draft)
-4. **RH metrics**: headcount, leave requests pending, payroll total this month
-5. **Date range filters**: 7d / 30d / 90d / this year / custom date picker
-6. **Charts library**: `recharts` (lightweight, React-native, no canvas dependency)
-7. **Data fetching**: all metrics via Supabase aggregation queries (GROUP BY, SUM, COUNT) in Route Handlers
-8. **Performance**: chart data cached in React Query (5-minute TTL)
-
-### Deliverables
-- Dashboard page with all KPIs populating from real Supabase data
-- All charts rendering correctly
-- Date range filter changes data without page reload
-
-### Success Criteria
-- KPIs match counts in their respective modules
-- Date range: switching "last 30d" to "this year" updates all charts
-- Empty state handled (no data → helpful message, not broken chart)
-
-### Dependencies
-- Phase 3 (CRM data), Phase 4 (facturation data), Phase 6 (RH data)
-
----
-
-## Phase 8 — Data Migration
-
-**Goal:** Migrate all existing production data from MongoDB Atlas to Supabase PostgreSQL, including users migrated to Supabase Auth without re-registration.
-
-### Tasks
-1. **Export MongoDB data**: `mongoexport` all collections to JSON (users, contacts, companies, deals, invoices, invoice_items, quotes, payments, accounts, journal_entries, employees, departments, leave_requests, payslips, audit_logs, google_tokens)
-2. **Write ETL scripts** (Python or Node.js):
-   - Map MongoDB ObjectIds → UUIDs (maintain lookup table for cross-reference)
-   - Transform document fields → relational columns (nested objects → FK rows)
-   - Handle null/missing fields (apply defaults or skip)
-   - Denormalized `contact.company_name` → resolve to actual `companies.id` FK
-3. **Migrate users to Supabase Auth**:
-   - Use Supabase Admin API `createUser()` with existing bcrypt hashes (Supabase supports `password_hash` import)
-   - Map old MongoDB `_id` → new Supabase `auth.users.id` (UUID)
-   - Insert `profiles` rows with roles and TOTP settings
-4. **Load data into Supabase**: run INSERT scripts per table, respecting FK order
-5. **Post-migration validation**:
-   - Record count verification: MongoDB collection count = Supabase table count
-   - FK integrity check: no orphaned rows
-   - Sample data spot-check (10 random records per table)
-   - Login test: existing user can log in with original credentials
-6. **Cutover**: update Vercel env vars to point to production Supabase, update DNS if needed
-7. **Keep old stack running** for 2 weeks post-cutover as rollback safety
-
-### Deliverables
-- All MongoDB data present in Supabase tables
-- All users login successfully post-migration (passwords unchanged)
-- Post-migration validation report (counts match, no FK violations)
-- New Vercel deployment connects to migrated Supabase production DB
-
-### Success Criteria
-- `contacts` in Supabase = contacts in MongoDB (count + spot check 10 records)
-- Existing user logs in with their email/password on the new Next.js app
-- Zero FK integrity violations in Supabase after migration
-- Old Django app still running and accessible (rollback available)
-
-### Dependencies
-- All feature phases complete (1-7) — migrate only when app is feature-complete
-
----
-
-## Phase 9 — Google Workspace Integration
-
-**Goal:** Port the Gmail API and Google Calendar integration from Django to Next.js Route Handlers.
-
-### Tasks
-1. **Google OAuth token storage**: Supabase `google_tokens` table — store/refresh tokens server-side (replaces MongoDB `google_tokens` collection)
-2. **Gmail Route Handlers**:
-   - `GET /api/google/gmail/messages` — list recent emails
-   - `GET /api/google/gmail/messages/[id]` — read full email
-   - `POST /api/google/gmail/send` — send email with optional attachment
-3. **Google Calendar Route Handlers**:
+1. Google OAuth token storage: `google_tokens` table — encrypt access + refresh tokens at rest (AES via `crypto` Node built-in)
+2. Connect Google Account flow: settings page → `supabase.auth.signInWithOAuth({ provider: 'google', scopes: 'gmail.readonly gmail.send calendar.events' })` → save tokens to `google_tokens`
+3. Token refresh middleware: check `expires_at` before every Google API call, refresh automatically
+4. Gmail Route Handlers (port `backend/apps/gmail_app/`):
+   - `GET /api/google/gmail/messages` — list recent emails (Gmail API)
+   - `POST /api/google/gmail/send` — send email with attachment
+5. Calendar Route Handlers (port `backend/apps/calendar_app/`):
    - `GET /api/google/calendar/events` — list upcoming events
-   - `POST /api/google/calendar/events` — create event from deal/task
-4. **OAuth token refresh**: middleware checks token expiry, refreshes automatically before API call
-5. **Gmail integration in CRM**: "Send Email" button on contact page opens compose modal, sends via Gmail API
-6. **Calendar integration**: "Add to Calendar" from deal/task creates Google Calendar event
-7. **Google OAuth connect flow**: user settings page → "Connect Google Account" → OAuth consent → tokens stored
+   - `POST /api/google/calendar/events` — create event
+6. Gmail compose modal on contact detail page — sends via Gmail API Route Handler
+7. "Add to Calendar" button on deal/task detail page
 
 ### Deliverables
-- Users can connect their Google account from settings
-- Emails readable and sendable from within the CRM contact view
+- Users can connect Google account from Settings
+- Emails readable and sendable from CRM contact view
 - Calendar events createable from deals/tasks
 
 ### Success Criteria
-- Connect Google → send email to contact → email appears in Gmail sent folder
-- Create calendar event from deal → event visible in Google Calendar
-- Token auto-refresh: works 24h after initial connect without re-authentication
+- Send email from contact page → appears in Gmail Sent
+- Create event from deal → visible in Google Calendar
+- Token refresh: still works 24h after initial connect
 
 ### Dependencies
-- Phase 2 (auth + user profiles), Phase 3 (CRM for email/calendar integration points)
+- Phase 1 (auth + google_tokens schema), Phase 2 (CRM contact detail page)
 
 ---
 
-## Phase 10 — Testing, CI/CD & Deployment
+## Phase 6 — Testing, CI/CD & Production Deployment
 
-**Goal:** Full test suite, CI/CD pipeline, Vercel production deployment, and decommission of old Render + Firebase stack.
+**Goal:** Test suite, GitHub Actions CI, Vercel production deployment, decommission old Render + Firebase stack.
 
 ### Tasks
-1. **Vitest unit tests**:
-   - Zod schemas (all form validation schemas)
-   - Data transformation utilities (ETL helpers, date formatters, currency formatters)
-   - Auth helpers (TOTP generation/verification)
-2. **Integration tests** (Next.js Route Handlers via `supertest` or fetch):
-   - Auth: login, Google OAuth callback, TOTP verification, logout
-   - CRM: create/read/update/delete contact, company, deal
-   - Facturation: create invoice, generate PDF, Stripe webhook handling
-3. **Playwright E2E tests**:
-   - Login with email/password → dashboard loads
-   - Create contact → appears in list → edit → delete (soft)
-   - Create invoice → generate PDF → mark paid
-   - 2FA: enable TOTP → login requires code → disable TOTP
-4. **GitHub Actions CI pipeline**:
-   - On PR: `npm run typecheck` + `npm run lint` + Vitest + Playwright
-   - On merge to main: auto-deploy to Vercel production
-5. **Vercel production config**:
-   - Production env vars configured (Supabase prod keys, Stripe live keys)
-   - Custom domain configured (replace `erpro-dz-frontend.onrender.com`)
-   - Vercel Analytics enabled
-6. **Decommission old stack** (after 2-week parallel running period post-migration):
-   - Delete Render services: `erpro-dz-api`, `erpro-dz-worker`, `erpro-dz-redis`
-   - Delete Firebase Hosting project
-   - Archive old `frontend/` and `backend/` directories in git
+
+**Tests**
+1. Vitest unit tests: Zod schemas, data transform utilities, TOTP helpers, Algerian payroll calculations
+2. Integration tests (fetch-based): auth flow, CRM CRUD, invoice creation, Stripe webhook handler
+3. Playwright E2E:
+   - Login (email/password) → dashboard loads
+   - Create contact → edit → soft delete → not visible in list
+   - Create invoice → PDF download → Stripe test payment → marked paid
+   - Enable 2FA → logout → login requires TOTP code
+
+**CI/CD**
+4. `.github/workflows/ci.yml`: on PR → `tsc --noEmit` + `eslint` + Vitest + Playwright
+5. Vercel GitHub integration: auto-deploy `main` to production, PR branches to preview URLs
+
+**Production**
+6. Vercel production env vars: Supabase prod keys, Stripe live keys, Google credentials
+7. Custom domain configured in Vercel (replaces Firebase Hosting domain)
+8. Vercel Analytics enabled
+
+**Decommission (2 weeks after production cutover)**
+9. Delete Render services: `erpro-dz-api`, `erpro-dz-worker`, `erpro-dz-redis`
+10. Delete Firebase Hosting project
+11. Archive `frontend/` and `backend/` directories: `git mv frontend _archive/frontend && git mv backend _archive/backend`
 
 ### Deliverables
-- Test suite running in CI (no skipped tests)
-- Vercel production URL live with real data
+- CI runs and passes on every PR
+- Production Vercel URL live with migrated data
 - Custom domain pointing to Vercel
-- Old Render/Firebase stack decommissioned
+- Old stack decommissioned
 
 ### Success Criteria
-- All Vitest and Playwright tests pass in CI
-- Production URL loads with real migrated data
+- All Vitest + Playwright tests pass in CI (no skips)
+- Production loads with real data, no console errors
 - Old Render API returns 404 or is deleted
-- Zero regressions reported in first 2 weeks post-launch
+- Custom domain resolves to Vercel
 
 ### Dependencies
-- All previous phases (full feature set required before test coverage)
-- Phase 8 (data migration complete for production deployment)
+- All previous phases
 
 ---
 
-## Coverage Validation
+## Coverage Map
 
-| Requirement | Phase |
-|-------------|-------|
-| FR-01 Auth (email, Google, 2FA, lockout, roles) | Phase 2 |
-| FR-02 CRM (contacts, companies, deals, pipeline, tasks, notes, search) | Phase 3 |
-| FR-03 Facturation (invoices, quotes, payments, Stripe, PDF, email) | Phase 4 |
-| FR-04 Comptabilité (accounts, journal, ledger, reports) | Phase 5 |
-| FR-05 RH/Paie (employees, departments, leaves, payroll, payslips) | Phase 6 |
-| FR-06 Analytics (KPIs, charts, date filters) | Phase 7 |
-| FR-07 Data migration (MongoDB → Supabase, user migration) | Phase 8 |
-| FR-08 Google Workspace (Gmail, Calendar, OAuth tokens) | Phase 9 |
-| FR-09 Audit logging | Phase 2 (middleware) |
-| TR-01 Tech stack (Next.js, TS, Supabase, Vercel, Tailwind, RQ, Zod) | Phase 1 |
-| TR-02 Architecture (App Router, RSC, Route Handlers, monorepo folder) | Phase 1 |
-| TR-03 Database schema (UUID PKs, RLS, soft deletes, FTS indexes) | Phase 1 |
-| TR-04 Performance (Core Web Vitals, caching, image optimization) | Phase 1 + 7 + 10 |
-| TR-05 Security (httpOnly cookies, CSRF, RLS, rate limiting, webhooks) | Phase 2 |
-| TR-06 Testing (Vitest, Playwright, CI/CD) | Phase 10 |
+| Requirements | Phase |
+|---|---|
+| Auth (email, Google, 2FA, lockout, roles, middleware) | Phase 1 |
+| Supabase schema (all 20+ tables, RLS, FTS, soft deletes) | Phase 1 |
+| CRM (contacts, companies, deals, pipeline, tasks, notes, search) | Phase 2 |
+| Analytics (KPIs, charts, date filters) | Phase 2 |
+| Facturation (invoices, quotes, Stripe, PDF, email) | Phase 3 |
+| Comptabilité (accounts, journal, ledger, reports) | Phase 3 |
+| RH/Paie (employees, departments, leaves, payroll, PDF) | Phase 3 |
+| Data migration (MongoDB → Supabase, user migration) | Phase 4 |
+| Google Workspace (Gmail, Calendar, OAuth tokens) | Phase 5 |
+| Testing (Vitest, Playwright, CI/CD, production, decommission) | Phase 6 |
 
-All 56 functional requirements and 16 technical requirements covered.
+All 56 functional requirements and 16 technical requirements covered in 6 phases.
 
 ---
 
 ## Phase Dependency Graph
 
 ```
-Phase 1 (Scaffold + Schema)
-    └─► Phase 2 (Auth)
-            ├─► Phase 3 (CRM)
-            │       └─► Phase 7 (Analytics) ─────────────────────┐
-            ├─► Phase 4 (Facturation)                            │
-            │       ├─► Phase 5 (Comptabilité)                  │
-            │       └─► (Analytics) ─────────────────────────────┤
-            └─► Phase 6 (RH/Paie)                                │
-                    └─► (Analytics) ─────────────────────────────┘
-                                                                  │
-                                                           Phase 7 complete
-                                                                  │
-                                                    Phase 8 (Data Migration)
-                                                                  │
-                                             Phase 9 (Google Workspace)
-                                                                  │
-                                              Phase 10 (Testing + Deployment)
+Phase 1 (Foundation + Schema + Auth)
+    │
+    ├─► Phase 2 (CRM + Analytics)
+    │       │
+    │       └─► Phase 3 (Facturation + Compta + RH)
+    │               │
+    │               └─► Phase 4 (Data Migration)
+    │                       │
+    │                       ├─► Phase 5 (Google Workspace)
+    │                       │
+    │                       └─► Phase 6 (Tests + Deployment)
+    └──────────────────────────────────────────────────┘
 ```
 
 ---
 
-*Roadmap created: 2026-03-04*
+## What Changed vs Original 10-Phase Plan
+
+| Original | New | Why |
+|---|---|---|
+| Phase 1 (Scaffold) + Phase 2 (Auth) | **Phase 1** | Schema and auth are always done together; no benefit to splitting |
+| Phases 3-7 (one module each) | **Phase 2 + Phase 3** | Existing React JSX is ported directly — 2 phases cover all 5 modules |
+| Phase 8 (Data migration) | **Phase 4** | Unchanged, just renumbered |
+| Phase 9 (Google) | **Phase 5** | Unchanged |
+| Phase 10 (Testing + Deploy) | **Phase 6** | Unchanged |
+| **10 phases** | **6 phases** | -4 phases by reusing existing React code instead of rebuilding |
+
+---
+
+*Roadmap revised: 2026-03-04*

@@ -22,23 +22,21 @@
 ## Milestone
 
 **M1 — Full Stack Migration**
-- 10 phases total
+- 6 phases total (compressed from 10 — existing React UI reused directly)
 - Current phase: none started
 
 ## Phase Progress
 
 | Phase | Name | Status |
 |-------|------|--------|
-| 1 | Project Scaffolding & Database Schema | ⬜ Not started |
-| 2 | Authentication | ⬜ Not started |
-| 3 | CRM Module | ⬜ Not started |
-| 4 | Facturation Module | ⬜ Not started |
-| 5 | Comptabilité Module | ⬜ Not started |
-| 6 | RH / Paie Module | ⬜ Not started |
-| 7 | Analytics Dashboard | ⬜ Not started |
-| 8 | Data Migration | ⬜ Not started |
-| 9 | Google Workspace Integration | ⬜ Not started |
-| 10 | Testing, CI/CD & Deployment | ⬜ Not started |
+| 1 | Foundation + Schema + Auth | ⬜ Not started |
+| 2 | Port CRM + Analytics UI | ⬜ Not started |
+| 3 | Port Facturation + Comptabilité + RH/Paie UI | ⬜ Not started |
+| 4 | Data Migration (MongoDB → Supabase) | ⬜ Not started |
+| 5 | Google Workspace Integration | ⬜ Not started |
+| 6 | Testing, CI/CD & Production Deployment | ⬜ Not started |
+
+> Compressed from 10 → 6 phases. Phases 2-3 port existing React JSX directly (not rebuilds).
 
 ---
 
