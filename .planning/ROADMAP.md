@@ -32,51 +32,27 @@ Route Handlers are only needed for: Stripe webhooks, PDF generation, Google OAut
 
 ---
 
-## Phase 1 — Foundation, Schema & Auth
+## Phase 1: Foundation, Schema & Auth
 
-**Goal:** Bootstrap Next.js in `/nextjs-app`, create Supabase project with the complete PostgreSQL schema (all 20+ tables, RLS, indexes), wire up Supabase Auth (email/password + Google OAuth + TOTP 2FA), and protect all routes via middleware. Old stack untouched.
+**Goal:** Bootstrap Next.js in `/nextjs-app`, create Supabase project with the complete PostgreSQL schema (all 20+ tables, RLS, indexes), wire up Supabase Auth (email/password + Google OAuth + TOTP 2FA), and protect all routes via proxy.ts. Old stack untouched.
 
 ### Why First
-Every other phase needs: the schema to write Supabase queries against, the auth session to know who's logged in, and the middleware to protect routes. Doing all three here removes all blocking dependencies in one shot.
+Every other phase needs: the schema to write Supabase queries against, the auth session to know who's logged in, and proxy.ts to protect routes. Doing all three here removes all blocking dependencies in one shot.
 
-### Tasks
+### Key Research Corrections (from 01-RESEARCH.md)
+- **proxy.ts** (not middleware.ts) — Next.js v16.0.0 renamed it
+- **Supabase native TOTP MFA** — use `supabase.auth.mfa.*`, no otpauth/qrcode libraries, no totp_secret column in profiles
+- **SECURITY DEFINER RPC** for account lockout — `record_failed_login(email)` bypasses RLS pre-auth
+- **getUser()** not getSession() in proxy.ts — security requirement
+- **'simple' tsvector config** — not 'english' (Algerian names: Arabic + French)
 
-**Scaffold (Day 1)**
-1. `npx create-next-app@14 nextjs-app --typescript --tailwind --eslint --app --src-dir=no`
-2. Install deps: `@supabase/ssr`, `@supabase/supabase-js`, `@tanstack/react-query`, `zod`, `lucide-react`, `otpauth`, `qrcode`
-3. Create `lib/supabase/server.ts` (createServerClient + cookie handling) and `lib/supabase/client.ts` (createBrowserClient)
-4. Copy and convert shared layout components from `frontend/src/components/layout/` → `components/layout/` (AppLayout, Sidebar, Topbar — TypeScript types only, keep Tailwind classes as-is)
-5. Create root `app/layout.tsx`, `app/(dashboard)/layout.tsx` with Sidebar, `app/(auth)/layout.tsx`
+**Plans:** 4 plans
 
-**Supabase Schema (Day 1-2)**
-6. Create Supabase project via dashboard, save URL + keys to `.env.local`
-7. Run SQL migrations to create all tables:
-   - Auth extension: `profiles` (user_id FK auth.users, role, full_name, avatar_url, totp_secret, totp_enabled, failed_login_attempts, locked_until)
-   - CRM: `companies`, `contacts` (+ search_vector tsvector), `deals`, `pipeline_stages`, `tasks`, `notes`
-   - Facturation: `invoices`, `invoice_items`, `quotes`, `payments`
-   - Comptabilité: `accounts`, `journal_entries`, `journal_lines`
-   - RH/Paie: `employees`, `departments`, `leave_requests`, `payslips`
-   - Cross-cutting: `google_tokens`, `audit_logs`
-   - All tables: UUID PKs, `deleted_at TIMESTAMPTZ` soft-delete, `owner_id UUID FK auth.users`
-8. Create RLS policies: owner sees own rows, admin sees all, soft-delete filter (`deleted_at IS NULL`)
-9. Create full-text search: GIN indexes + tsvector triggers on `contacts`, `companies`, `deals`
-10. Create `profiles` auto-insert trigger (fires on `auth.users` insert)
-
-**Auth (Day 2-3)**
-11. Port `frontend/src/pages/auth/Login.jsx` → `app/(auth)/login/page.tsx`:
-    - Replace axios POST → `supabase.auth.signInWithPassword()`
-    - Replace Zustand setTokens → Supabase session cookie (automatic via `@supabase/ssr`)
-12. Add Google OAuth button → `supabase.auth.signInWithOAuth({ provider: 'google' })` + `app/(auth)/callback/route.ts`
-13. TOTP 2FA:
-    - `app/(auth)/2fa/page.tsx` — verify TOTP code after password login using `otpauth` library
-    - `app/(dashboard)/settings/2fa/page.tsx` — enable/disable 2FA, show QR code
-    - Store encrypted TOTP secret in `profiles.totp_secret`
-14. `middleware.ts` — validate Supabase session, redirect to `/login` if missing, inject user into headers
-15. Account lockout: increment `failed_login_attempts` on bad password via Route Handler, lock if ≥ 5
-16. Logout: `supabase.auth.signOut()` server action + redirect
-
-**Vercel (Day 3)**
-17. Link `/nextjs-app` folder as Vercel project root, configure env vars, verify preview URL deploys
+Plans:
+- [ ] 01-01-PLAN.md — Next.js 16 scaffold, Supabase clients, layout port, Supabase project setup (checkpoint)
+- [ ] 01-02-PLAN.md — Complete PostgreSQL schema (20+ tables), RLS, SECURITY DEFINER functions, FTS indexes, TS types
+- [ ] 01-03-PLAN.md — Auth flows: proxy.ts, login page, Google OAuth callback, TOTP 2FA pages, logout, audit helper, Vercel config
+- [ ] 01-04-PLAN.md — Human verification: end-to-end auth flow testing (checkpoint)
 
 ### Deliverables
 - `nextjs-app/` compiles, deploys to Vercel preview
@@ -98,7 +74,7 @@ Every other phase needs: the schema to write Supabase queries against, the auth 
 
 ---
 
-## Phase 2 — Port CRM + Analytics UI
+## Phase 2: Port CRM + Analytics UI
 
 **Goal:** Port the entire CRM module and Analytics dashboard from existing React pages to Next.js using Supabase client queries, replacing the axios/Django layer.
 
@@ -166,7 +142,7 @@ For each page in frontend/src/pages/crm/:
 
 ---
 
-## Phase 3 — Port Facturation + Comptabilité + RH/Paie UI
+## Phase 3: Port Facturation + Comptabilite + RH/Paie UI
 
 **Goal:** Port the remaining three modules using the same porting strategy. Add Stripe Payment Intent for invoices. Generate PDF payslips and invoices server-side.
 
@@ -220,7 +196,7 @@ For each page in frontend/src/pages/crm/:
 
 ---
 
-## Phase 4 — Data Migration: MongoDB → Supabase
+## Phase 4: Data Migration MongoDB to Supabase
 
 **Goal:** Export all production MongoDB data, transform to relational format, and import into Supabase. Migrate existing users to Supabase Auth without requiring password resets.
 
@@ -244,7 +220,7 @@ The schema must be finalized and validated with real data before migrating produ
 **Migrate Users to Supabase Auth**
 5. Use Supabase Admin API (`supabase.auth.admin.createUser()`) with `password_hash` param to import existing bcrypt hashes — users keep original passwords, no reset needed
 6. Map old MongoDB user `_id` → new Supabase `auth.users.id` (UUID), update the ObjectId→UUID lookup table
-7. Insert `profiles` rows with role, totp_secret, totp_enabled from old User documents
+7. Insert `profiles` rows with role from old User documents
 
 **Load into Supabase**
 8. Execute INSERT `.sql` files against Supabase PostgreSQL in FK dependency order:
@@ -278,7 +254,7 @@ The schema must be finalized and validated with real data before migrating produ
 
 ---
 
-## Phase 5 — Google Workspace Integration
+## Phase 5: Google Workspace Integration
 
 **Goal:** Port Gmail and Google Calendar integrations from Django to Next.js Route Handlers, storing OAuth tokens in Supabase.
 
@@ -310,14 +286,14 @@ The schema must be finalized and validated with real data before migrating produ
 
 ---
 
-## Phase 6 — Testing, CI/CD & Production Deployment
+## Phase 6: Testing, CI/CD and Production Deployment
 
 **Goal:** Test suite, GitHub Actions CI, Vercel production deployment, decommission old Render + Firebase stack.
 
 ### Tasks
 
 **Tests**
-1. Vitest unit tests: Zod schemas, data transform utilities, TOTP helpers, Algerian payroll calculations
+1. Vitest unit tests: Zod schemas, data transform utilities, Algerian payroll calculations
 2. Integration tests (fetch-based): auth flow, CRM CRUD, invoice creation, Stripe webhook handler
 3. Playwright E2E:
    - Login (email/password) → dashboard loads
@@ -360,7 +336,7 @@ The schema must be finalized and validated with real data before migrating produ
 
 | Requirements | Phase |
 |---|---|
-| Auth (email, Google, 2FA, lockout, roles, middleware) | Phase 1 |
+| Auth (email, Google, 2FA, lockout, roles, proxy.ts) | Phase 1 |
 | Supabase schema (all 20+ tables, RLS, FTS, soft deletes) | Phase 1 |
 | CRM (contacts, companies, deals, pipeline, tasks, notes, search) | Phase 2 |
 | Analytics (KPIs, charts, date filters) | Phase 2 |
