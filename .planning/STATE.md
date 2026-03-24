@@ -63,6 +63,8 @@
 - [Phase 02-04]: Migration named 006_ (not 003_) to avoid collision with existing 003_functions.sql
 - [Phase 02-04]: tasks.assigned_to FK join uses profiles!tasks_assigned_to_fkey alias with (supabase as any) cast since FK targets auth.users not profiles
 - [Phase 02-04]: editingTask state drives modal mode (null=create, non-null=edit) with single saveMut branching on value
+- [Phase 02-05]: recharts imported directly (not via dynamic()) — page is already use client, no SSR risk
+- [Phase 02-05]: Client-side groupBy for deals by stage — avoids PostgREST GROUP BY complexity
 
 ## Key Context
 
@@ -140,10 +142,11 @@
 | 02-port-crm-analytics-ui | 02 | 14min | 2 | 2 |
 | 02-port-crm-analytics-ui | 03 | 42min | 2 | 3 |
 | Phase 02-port-crm-analytics-ui P04 | 9min | 2 tasks | 2 files |
+| Phase 02-port-crm-analytics-ui P05 | 8min | 2 tasks | 3 files |
 
 ## Last Session
 
-- **Stopped at:** Completed 02-04-PLAN.md — Tasks CRUD with priority badges, edit modal, assignee select, filter tabs, and migration
+- **Stopped at:** Completed 02-05-PLAN.md — Analytics dashboard with recharts KPI cards, deals-by-stage bar chart, and audit log viewer
 - **Timestamp:** 2026-03-24
 
 ---
