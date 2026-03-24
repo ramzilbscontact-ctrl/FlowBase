@@ -137,6 +137,16 @@ For each page in frontend/src/pages/crm/:
 - RLS: user sees only their own records (admin sees all)
 - Analytics KPIs match real row counts in Supabase tables
 
+**Plans:** 6 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Shared UI components (Modal, StatsCard) + pipeline_stages seed migration
+- [ ] 02-02-PLAN.md — Contacts + Companies pages: live CRUD with search and modals
+- [ ] 02-03-PLAN.md — Deals Kanban page: @dnd-kit, KanbanBoard component, stage mutations
+- [ ] 02-04-PLAN.md — Tasks page: complete toggle, priority migration, filter tabs
+- [ ] 02-05-PLAN.md — Analytics page: recharts install, KPI cards, deals-by-stage chart, audit log
+- [ ] 02-06-PLAN.md — UAT: human verification of all CRM + analytics flows
+
 ### Dependencies
 - Phase 1 (schema + auth + Supabase client)
 
