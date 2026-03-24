@@ -53,6 +53,9 @@
 7. **SECURITY DEFINER RPCs for pre-auth lockout** — record_failed_login and check_login_allowed bypass RLS to work before user is authenticated [01-02]
 
 ---
+- [Phase 01-03]: proxy.ts not middleware.ts — Next.js v16.0.0 renamed the middleware file and export function name
+- [Phase 01-03]: logAudit signature changed to self-contained (no supabase client param) — gets user internally via createServerClient, uses service role to bypass RLS on audit_logs
+- [Phase 01-03]: Kept rich login UI from 01-01 (mode toggle, Google button, password visibility) and layered lockout RPCs and AAL2 check on top rather than replacing
 
 ## Key Context
 
@@ -112,10 +115,11 @@
 | 01-foundation-schema-auth | 02 | 5min | 3 | 4 |
 
 ---
+| Phase 01-foundation-schema-auth P03 | 40min | 3 tasks | 8 files |
 
 ## Last Session
 
-- **Stopped at:** Completed 01-02-PLAN.md
+- **Stopped at:** Completed 01-03-PLAN.md
 - **Timestamp:** 2026-03-24T07:44:00Z
 
 ---

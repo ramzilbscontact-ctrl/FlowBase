@@ -46,7 +46,7 @@ Every other phase needs: the schema to write Supabase queries against, the auth 
 - **getUser()** not getSession() in proxy.ts — security requirement
 - **'simple' tsvector config** — not 'english' (Algerian names: Arabic + French)
 
-**Plans:** 1/4 plans executed
+**Plans:** 3/4 plans executed
 
 Plans:
 - [x] 01-01-PLAN.md — Next.js 16 scaffold, Supabase clients, layout port, Supabase project setup (checkpoint) — DONE 2026-03-24
