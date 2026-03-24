@@ -16,7 +16,7 @@
 | Roadmap created | ✅ `.planning/ROADMAP.md` (6 phases) |
 | Research done | ✅ `.planning/research/NEXTJS_PATTERNS.md` |
 | Active phase | Phase 2 — Port CRM + Analytics UI |
-| Current plan | Phase 2, Plan 3 — next to plan |
+| Current plan | Phase 2, Plan 4 — next to execute |
 
 ---
 
@@ -32,7 +32,7 @@
 | Phase | Name | Status |
 |-------|------|--------|
 | 1 | Foundation + Schema + Auth | ✅ Complete (4/4 plans) |
-| 2 | Port CRM + Analytics UI | 🟡 In progress — 2/5 plans complete (contacts+companies CRUD done) |
+| 2 | Port CRM + Analytics UI | 🟡 In progress — 3/5 plans complete (contacts+companies+deals Kanban done) |
 | 3 | Port Facturation + Comptabilité + RH/Paie UI | ⬜ Not started |
 | 4 | Data Migration (MongoDB → Supabase) | ⬜ Not started |
 | 5 | Google Workspace Integration | ⬜ Not started |
@@ -58,6 +58,8 @@
 ---
 - [Phase 02-01]: Migration named 005_seed_stages.sql (not 002) to avoid conflict with existing 002_rls.sql
 - [Phase 02-01]: pipeline_stages migration uses DO block seeding first auth.users entry for dev; app auto-seeds per-user in production (Plan 03)
+- [Phase 02-03]: @dnd-kit chosen for Kanban drag-and-drop — DndContext + useDroppable + useSortable with PointerSensor distance:8 prevents accidental drags
+- [Phase 02-03]: KanbanBoard drop target: checks if over.id matches stage id; falls back to finding deal's stage_id for card-on-card drops
 
 ## Key Context
 
@@ -133,10 +135,11 @@
 
 | 02-port-crm-analytics-ui | 01 | 8min | 3 | 3 |
 | 02-port-crm-analytics-ui | 02 | 14min | 2 | 2 |
+| 02-port-crm-analytics-ui | 03 | 42min | 2 | 3 |
 
 ## Last Session
 
-- **Stopped at:** Completed 02-02-PLAN.md — contacts/page.tsx (full CRUD), companies/page.tsx (full CRUD + contacts count)
+- **Stopped at:** Completed 02-03-PLAN.md — KanbanBoard component + deals page with drag-and-drop pipeline, create/edit modal, stage auto-seed
 - **Timestamp:** 2026-03-24
 
 ---
