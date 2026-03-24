@@ -2,7 +2,7 @@
 
 **Project:** Radiance ERP Migration → Next.js 16 + Supabase + Vercel
 **Last updated:** 2026-03-24
-**Status:** 🟢 Executing — Phase 1, Plan 1 complete
+**Status:** 🟢 Executing — Phase 1, Plan 2 complete
 
 ---
 
@@ -15,8 +15,8 @@
 | Requirements written | ✅ `.planning/REQUIREMENTS.md` (10 FR modules, 6 TR groups) |
 | Roadmap created | ✅ `.planning/ROADMAP.md` (10 phases) |
 | Research done | ✅ `.planning/research/NEXTJS_PATTERNS.md` |
-| Active phase | Phase 1 — Plan 1 (01-01) complete |
-| Current plan | Phase 1, Plan 2 (01-02-PLAN.md) — Schema SQL |
+| Active phase | Phase 1 — Plan 2 (01-02) complete |
+| Current plan | Phase 1, Plan 3 (01-03-PLAN.md) — Auth flows |
 
 ---
 
@@ -25,13 +25,13 @@
 **M1 — Full Stack Migration**
 - 6 phases total (compressed from 10 — existing React UI reused directly)
 - Current phase: Phase 1 — Foundation + Schema + Auth (in progress)
-- Current plan: 2 of 4 in Phase 1
+- Current plan: 3 of 4 in Phase 1
 
 ## Phase Progress
 
 | Phase | Name | Status |
 |-------|------|--------|
-| 1 | Foundation + Schema + Auth | 🟡 In progress (1/4 plans done) |
+| 1 | Foundation + Schema + Auth | 🟡 In progress (2/4 plans done) |
 | 2 | Port CRM + Analytics UI | ⬜ Not started |
 | 3 | Port Facturation + Comptabilité + RH/Paie UI | ⬜ Not started |
 | 4 | Data Migration (MongoDB → Supabase) | ⬜ Not started |
@@ -48,6 +48,9 @@
 2. **Topbar logout via API route (/api/auth/logout)** — Server-side session cleanup is more reliable than direct client signOut in component [01-01]
 3. **Sonner for toast notifications** — Lightweight toast library added alongside layout components for UX feedback [01-01]
 4. **Full generated database.types.ts immediately** — Generated real types from live Supabase project (zjhmcyvrziwwkdcylktj) instead of using placeholder [01-01]
+5. **Migration files as source of truth** — SQL committed to version control for reproducible schema management [01-02]
+6. **No hard DELETE policies** — Soft delete only (deleted_at) on all data tables for audit trails and recovery [01-02]
+7. **SECURITY DEFINER RPCs for pre-auth lockout** — record_failed_login and check_login_allowed bypass RLS to work before user is authenticated [01-02]
 
 ---
 
@@ -106,13 +109,14 @@
 | Phase | Plan | Duration | Tasks | Files |
 |-------|------|----------|-------|-------|
 | 01-foundation-schema-auth | 01 | 25min | 3 | 14 |
+| 01-foundation-schema-auth | 02 | 5min | 3 | 4 |
 
 ---
 
 ## Last Session
 
-- **Stopped at:** Completed 01-01-PLAN.md (checkpoint confirmed — Supabase ready)
-- **Timestamp:** 2026-03-24T07:41:00Z
+- **Stopped at:** Completed 01-02-PLAN.md
+- **Timestamp:** 2026-03-24T07:44:00Z
 
 ---
 
