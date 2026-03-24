@@ -47,6 +47,13 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  // Redirect authenticated users away from /login → /dashboard
+  if (user && request.nextUrl.pathname.startsWith('/login')) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/dashboard'
+    return NextResponse.redirect(url)
+  }
+
   // AAL2 enforcement: if user has TOTP enrolled, require 2FA verification
   // before accessing the dashboard
   if (user && !isAuthRoute) {
