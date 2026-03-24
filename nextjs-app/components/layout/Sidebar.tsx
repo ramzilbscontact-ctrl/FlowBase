@@ -17,7 +17,7 @@ type NavEntry = NavSection | NavItem
 
 const nav: NavEntry[] = [
   { section: 'Principal' },
-  { label: 'Dashboard',      icon: LayoutDashboard, to: '/' },
+  { label: 'Dashboard',      icon: LayoutDashboard, to: '/dashboard' },
   { section: 'CRM' },
   { label: 'Contacts',       icon: Users,           to: '/crm/contacts' },
   { label: 'Entreprises',    icon: Building2,       to: '/crm/companies' },
