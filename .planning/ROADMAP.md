@@ -137,7 +137,7 @@ For each page in frontend/src/pages/crm/:
 - RLS: user sees only their own records (admin sees all)
 - Analytics KPIs match real row counts in Supabase tables
 
-**Plans:** 6 plans
+**Plans:** 1/6 plans executed
 
 Plans:
 - [ ] 02-01-PLAN.md — Shared UI components (Modal, StatsCard) + pipeline_stages seed migration

@@ -54,6 +54,8 @@
 10. **Module scaffold pages created ahead of Phase 2** — 18 placeholder pages built during Phase 1 UAT to unblock navigation testing [01-04 polish]
 
 ---
+- [Phase 02-01]: Migration named 005_seed_stages.sql (not 002) to avoid conflict with existing 002_rls.sql
+- [Phase 02-01]: pipeline_stages migration uses DO block seeding first auth.users entry for dev; app auto-seeds per-user in production (Plan 03)
 
 ## Key Context
 
@@ -128,10 +130,11 @@
 | 01-foundation-schema-auth | 04 | 10min | UAT | — |
 
 ---
+| Phase 02-port-crm-analytics-ui P01 | 8min | 3 tasks | 3 files |
 
 ## Last Session
 
-- **Stopped at:** Phase 1 complete — Phase 2 scaffold done, CRUD wiring needed
+- **Stopped at:** Completed 02-01-PLAN.md — Modal.tsx, StatsCard.tsx, 005_seed_stages.sql
 - **Timestamp:** 2026-03-24
 
 ---
