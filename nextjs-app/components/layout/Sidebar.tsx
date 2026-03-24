@@ -76,12 +76,12 @@ export default function Sidebar() {
               </p>
             ) : <div key={i} className="border-t border-gray-700 my-2" />
           }
-          const Icon = item.icon
-          const isActive = item.to === '/' ? pathname === '/' : pathname.startsWith(item.to)
+          const { icon: Icon, to, label } = item as NavItem
+          const isActive = to === '/' ? pathname === '/' : pathname.startsWith(to)
           return (
             <Link
-              key={item.to}
-              href={item.to}
+              key={to}
+              href={to}
               className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition ${
                 isActive
                   ? 'bg-blue-600 text-white font-medium'
@@ -89,7 +89,7 @@ export default function Sidebar() {
               }`}
             >
               <Icon size={16} className="shrink-0" />
-              {!collapsed && <span>{item.label}</span>}
+              {!collapsed && <span>{label}</span>}
             </Link>
           )
         })}
