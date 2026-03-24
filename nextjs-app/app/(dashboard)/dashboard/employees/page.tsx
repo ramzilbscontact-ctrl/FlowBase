@@ -7,7 +7,7 @@ export default async function EmployeesPage() {
 
   const { data: employees, error } = await supabase
     .from('employees')
-    .select('id, first_name, last_name, email, position, hire_date, created_at')
+    .select('id, full_name, email, job_title, start_date, created_at')
     .order('created_at', { ascending: false })
     .limit(50)
 
@@ -40,11 +40,11 @@ export default async function EmployeesPage() {
         ) : (
           employees.map((e) => (
             <TableRow key={e.id}>
-              <td className="px-4 py-3 font-medium text-gray-900">{e.first_name} {e.last_name}</td>
+              <td className="px-4 py-3 font-medium text-gray-900">{e.full_name}</td>
               <td className="px-4 py-3 text-gray-600">{e.email ?? '—'}</td>
-              <td className="px-4 py-3 text-gray-600">{e.position ?? '—'}</td>
+              <td className="px-4 py-3 text-gray-600">{e.job_title ?? '—'}</td>
               <td className="px-4 py-3 text-gray-400 text-xs">
-                {e.hire_date ? new Date(e.hire_date).toLocaleDateString('fr-FR') : '—'}
+                {e.start_date ? new Date(e.start_date).toLocaleDateString('fr-FR') : '—'}
               </td>
               <td className="px-4 py-3 text-right">
                 <button className="text-xs text-violet-600 hover:underline">Voir</button>

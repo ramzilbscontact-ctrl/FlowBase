@@ -7,7 +7,7 @@ export default async function JournalPage() {
 
   const { data: entries, error } = await supabase
     .from('journal_entries')
-    .select('id, date, description, is_posted, created_at')
+    .select('id, date, description, invoice_id, created_at')
     .order('created_at', { ascending: false })
     .limit(50)
 
@@ -46,8 +46,8 @@ export default async function JournalPage() {
               <td className="px-4 py-3 text-gray-900">{e.description ?? '—'}</td>
               <td className="px-4 py-3">
                 <Badge
-                  label={e.is_posted ? 'Validé' : 'Brouillon'}
-                  colorClass={e.is_posted ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}
+                  label={e.invoice_id ? 'Facture liée' : 'Manuel'}
+                  colorClass={e.invoice_id ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'}
                 />
               </td>
               <td className="px-4 py-3 text-right">

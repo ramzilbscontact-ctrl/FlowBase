@@ -28,12 +28,12 @@ export default async function InvoicesPage() {
 
   const { data: invoices, error } = await supabase
     .from('invoices')
-    .select('id, invoice_number, status, total_amount, issue_date, due_date, created_at')
+    .select('id, invoice_number, status, total, issue_date, due_date, created_at')
     .order('created_at', { ascending: false })
     .limit(50)
 
-  const totalPaid = invoices?.filter(i => i.status === 'paid').reduce((s, i) => s + (i.total_amount ?? 0), 0) ?? 0
-  const totalPending = invoices?.filter(i => i.status === 'sent' || i.status === 'overdue').reduce((s, i) => s + (i.total_amount ?? 0), 0) ?? 0
+  const totalPaid = invoices?.filter(i => i.status === 'paid').reduce((s, i) => s + (i.total ?? 0), 0) ?? 0
+  const totalPending = invoices?.filter(i => i.status === 'sent' || i.status === 'overdue').reduce((s, i) => s + (i.total ?? 0), 0) ?? 0
 
   const kpiCards = (
     <div className="grid grid-cols-2 gap-4 max-w-md">
@@ -86,7 +86,7 @@ export default async function InvoicesPage() {
                   colorClass={STATUS_COLORS[inv.status] ?? 'bg-gray-100 text-gray-600'}
                 />
               </td>
-              <td className="px-4 py-3 font-medium text-gray-900">{formatCurrency(inv.total_amount)}</td>
+              <td className="px-4 py-3 font-medium text-gray-900">{formatCurrency(inv.total)}</td>
               <td className="px-4 py-3 text-gray-400 text-xs">
                 {inv.issue_date ? new Date(inv.issue_date).toLocaleDateString('fr-FR') : '—'}
               </td>

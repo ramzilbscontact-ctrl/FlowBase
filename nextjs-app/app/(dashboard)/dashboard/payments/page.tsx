@@ -19,7 +19,7 @@ export default async function PaymentsPage() {
 
   const { data: payments, error } = await supabase
     .from('payments')
-    .select('id, payment_date, method, amount, reference, created_at')
+    .select('id, paid_at, method, amount, reference, created_at')
     .order('created_at', { ascending: false })
     .limit(50)
 
@@ -55,9 +55,9 @@ export default async function PaymentsPage() {
           payments.map((p) => (
             <TableRow key={p.id}>
               <td className="px-4 py-3 text-gray-600">
-                {p.payment_date ? new Date(p.payment_date).toLocaleDateString('fr-FR') : '—'}
+                {p.paid_at ? new Date(p.paid_at).toLocaleDateString('fr-FR') : '—'}
               </td>
-              <td className="px-4 py-3 text-gray-600">{METHOD_LABELS[p.method] ?? p.method ?? '—'}</td>
+              <td className="px-4 py-3 text-gray-600">{p.method ? (METHOD_LABELS[p.method] ?? p.method) : '—'}</td>
               <td className="px-4 py-3 text-gray-700 font-medium">{formatCurrency(p.amount)}</td>
               <td className="px-4 py-3 text-gray-500 font-mono text-xs">{p.reference ?? '—'}</td>
               <td className="px-4 py-3 text-right">

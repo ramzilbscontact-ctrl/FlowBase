@@ -19,7 +19,7 @@ export default async function LeavesPage() {
 
   const { data: leaves, error } = await supabase
     .from('leave_requests')
-    .select('id, employee_id, start_date, end_date, reason, status, created_at')
+    .select('id, employee_id, type, start_date, end_date, status, notes, created_at')
     .order('created_at', { ascending: false })
     .limit(50)
 
@@ -59,7 +59,7 @@ export default async function LeavesPage() {
               <td className="px-4 py-3 text-gray-600 text-xs">
                 {l.end_date ? new Date(l.end_date).toLocaleDateString('fr-FR') : '—'}
               </td>
-              <td className="px-4 py-3 text-gray-600">{l.reason ?? '—'}</td>
+              <td className="px-4 py-3 text-gray-600">{l.notes ?? '—'}</td>
               <td className="px-4 py-3">
                 <Badge
                   label={STATUS_LABELS[l.status] ?? l.status}

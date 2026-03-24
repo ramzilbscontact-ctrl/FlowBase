@@ -30,7 +30,7 @@ export default async function DealsPage() {
 
   const { data: deals, error } = await supabase
     .from('deals')
-    .select('id, title, value, stage, expected_close_date, created_at')
+    .select('id, title, value, stage_id, closed_at, created_at')
     .order('created_at', { ascending: false })
     .limit(50)
 
@@ -68,13 +68,13 @@ export default async function DealsPage() {
               <td className="px-4 py-3 font-medium text-gray-900">{d.title}</td>
               <td className="px-4 py-3">
                 <Badge
-                  label={STAGE_LABELS[d.stage] ?? d.stage}
-                  colorClass={STAGE_COLORS[d.stage] ?? 'bg-gray-100 text-gray-600'}
+                  label={d.stage_id ? 'En cours' : 'Nouveau'}
+                  colorClass={d.stage_id ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'}
                 />
               </td>
               <td className="px-4 py-3 text-gray-700 font-medium">{formatCurrency(d.value)}</td>
               <td className="px-4 py-3 text-gray-400 text-xs">
-                {d.expected_close_date ? new Date(d.expected_close_date).toLocaleDateString('fr-FR') : '—'}
+                {d.closed_at ? new Date(d.closed_at).toLocaleDateString('fr-FR') : '—'}
               </td>
               <td className="px-4 py-3 text-right">
                 <button className="text-xs text-violet-600 hover:underline">Voir</button>

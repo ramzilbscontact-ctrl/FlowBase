@@ -28,7 +28,7 @@ export default async function QuotesPage() {
 
   const { data: quotes, error } = await supabase
     .from('quotes')
-    .select('id, quote_number, status, total_amount, issue_date, expiry_date, created_at')
+    .select('id, quote_number, status, total, valid_until, created_at')
     .order('created_at', { ascending: false })
     .limit(50)
 
@@ -68,12 +68,12 @@ export default async function QuotesPage() {
                   colorClass={STATUS_COLORS[q.status] ?? 'bg-gray-100 text-gray-600'}
                 />
               </td>
-              <td className="px-4 py-3 text-gray-700 font-medium">{formatCurrency(q.total_amount)}</td>
+              <td className="px-4 py-3 text-gray-700 font-medium">{formatCurrency(q.total)}</td>
               <td className="px-4 py-3 text-gray-400 text-xs">
-                {q.issue_date ? new Date(q.issue_date).toLocaleDateString('fr-FR') : '—'}
+                {q.created_at ? new Date(q.created_at).toLocaleDateString('fr-FR') : '—'}
               </td>
               <td className="px-4 py-3 text-gray-400 text-xs">
-                {q.expiry_date ? new Date(q.expiry_date).toLocaleDateString('fr-FR') : '—'}
+                {q.valid_until ? new Date(q.valid_until).toLocaleDateString('fr-FR') : '—'}
               </td>
               <td className="px-4 py-3 text-right">
                 <button className="text-xs text-violet-600 hover:underline">Voir</button>
