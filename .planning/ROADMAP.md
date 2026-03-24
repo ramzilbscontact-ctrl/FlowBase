@@ -46,13 +46,13 @@ Every other phase needs: the schema to write Supabase queries against, the auth 
 - **getUser()** not getSession() in proxy.ts — security requirement
 - **'simple' tsvector config** — not 'english' (Algerian names: Arabic + French)
 
-**Plans:** 3/4 plans executed
+**Plans:** 4/4 plans executed
 
 Plans:
 - [x] 01-01-PLAN.md — Next.js 16 scaffold, Supabase clients, layout port, Supabase project setup (checkpoint) — DONE 2026-03-24
-- [ ] 01-02-PLAN.md — Complete PostgreSQL schema (20+ tables), RLS, SECURITY DEFINER functions, FTS indexes, TS types
-- [ ] 01-03-PLAN.md — Auth flows: proxy.ts, login page, Google OAuth callback, TOTP 2FA pages, logout, audit helper, Vercel config
-- [ ] 01-04-PLAN.md — Human verification: end-to-end auth flow testing (checkpoint)
+- [x] 01-02-PLAN.md — Complete PostgreSQL schema (20+ tables), RLS, SECURITY DEFINER functions, FTS indexes, TS types — DONE 2026-03-24
+- [x] 01-03-PLAN.md — Auth flows: proxy.ts, login page, Google OAuth callback, TOTP 2FA pages, logout, audit helper, Vercel config — DONE 2026-03-24
+- [x] 01-04-PLAN.md — Human verification: end-to-end auth flow testing (checkpoint) — DONE 2026-03-24
 
 ### Deliverables
 - `nextjs-app/` compiles, deploys to Vercel preview
@@ -137,11 +137,11 @@ For each page in frontend/src/pages/crm/:
 - RLS: user sees only their own records (admin sees all)
 - Analytics KPIs match real row counts in Supabase tables
 
-**Plans:** 1/6 plans executed
+**Plans:** 2/6 plans executed
 
 Plans:
-- [ ] 02-01-PLAN.md — Shared UI components (Modal, StatsCard) + pipeline_stages seed migration
-- [ ] 02-02-PLAN.md — Contacts + Companies pages: live CRUD with search and modals
+- [x] 02-01-PLAN.md — Shared UI components (Modal, StatsCard) + pipeline_stages seed migration — DONE 2026-03-24
+- [x] 02-02-PLAN.md — Contacts + Companies pages: live CRUD with search and modals — DONE 2026-03-24
 - [ ] 02-03-PLAN.md — Deals Kanban page: @dnd-kit, KanbanBoard component, stage mutations
 - [ ] 02-04-PLAN.md — Tasks page: complete toggle, priority migration, filter tabs
 - [ ] 02-05-PLAN.md — Analytics page: recharts install, KPI cards, deals-by-stage chart, audit log

@@ -16,7 +16,7 @@
 | Roadmap created | ✅ `.planning/ROADMAP.md` (6 phases) |
 | Research done | ✅ `.planning/research/NEXTJS_PATTERNS.md` |
 | Active phase | Phase 2 — Port CRM + Analytics UI |
-| Current plan | Phase 2, Plan 1 — needs planning |
+| Current plan | Phase 2, Plan 3 — next to plan |
 
 ---
 
@@ -32,7 +32,7 @@
 | Phase | Name | Status |
 |-------|------|--------|
 | 1 | Foundation + Schema + Auth | ✅ Complete (4/4 plans) |
-| 2 | Port CRM + Analytics UI | 🟡 In progress — scaffold done, data wiring needed |
+| 2 | Port CRM + Analytics UI | 🟡 In progress — 2/5 plans complete (contacts+companies CRUD done) |
 | 3 | Port Facturation + Comptabilité + RH/Paie UI | ⬜ Not started |
 | 4 | Data Migration (MongoDB → Supabase) | ⬜ Not started |
 | 5 | Google Workspace Integration | ⬜ Not started |
@@ -52,6 +52,8 @@
 8. **PageShell component for uniform module layout** — Shared wrapper with title, subtitle, action button slot — all module pages use it [01-04 polish]
 9. **Sidebar uses /dashboard/... convention** — All routes under /dashboard/* for clarity with (dashboard) route group [01-04 polish]
 10. **Module scaffold pages created ahead of Phase 2** — 18 placeholder pages built during Phase 1 UAT to unblock navigation testing [01-04 polish]
+11. **Combined create+edit modal via editingContact/editingCompany state** — Single modal component, two mutation branches; avoids duplicate form definitions [02-02]
+12. **contacts(count) aggregate uses (supabase as any) cast** — PostgREST count aggregate not reflected in generated types; cast preserves type safety elsewhere [02-02]
 
 ---
 - [Phase 02-01]: Migration named 005_seed_stages.sql (not 002) to avoid conflict with existing 002_rls.sql
@@ -129,12 +131,12 @@
 | 01-foundation-schema-auth | 03 | 40min | 3 | 8 |
 | 01-foundation-schema-auth | 04 | 10min | UAT | — |
 
----
-| Phase 02-port-crm-analytics-ui P01 | 8min | 3 tasks | 3 files |
+| 02-port-crm-analytics-ui | 01 | 8min | 3 | 3 |
+| 02-port-crm-analytics-ui | 02 | 14min | 2 | 2 |
 
 ## Last Session
 
-- **Stopped at:** Completed 02-01-PLAN.md — Modal.tsx, StatsCard.tsx, 005_seed_stages.sql
+- **Stopped at:** Completed 02-02-PLAN.md — contacts/page.tsx (full CRUD), companies/page.tsx (full CRUD + contacts count)
 - **Timestamp:** 2026-03-24
 
 ---
