@@ -60,6 +60,9 @@
 - [Phase 02-01]: pipeline_stages migration uses DO block seeding first auth.users entry for dev; app auto-seeds per-user in production (Plan 03)
 - [Phase 02-03]: @dnd-kit chosen for Kanban drag-and-drop — DndContext + useDroppable + useSortable with PointerSensor distance:8 prevents accidental drags
 - [Phase 02-03]: KanbanBoard drop target: checks if over.id matches stage id; falls back to finding deal's stage_id for card-on-card drops
+- [Phase 02-04]: Migration named 006_ (not 003_) to avoid collision with existing 003_functions.sql
+- [Phase 02-04]: tasks.assigned_to FK join uses profiles!tasks_assigned_to_fkey alias with (supabase as any) cast since FK targets auth.users not profiles
+- [Phase 02-04]: editingTask state drives modal mode (null=create, non-null=edit) with single saveMut branching on value
 
 ## Key Context
 
@@ -136,10 +139,11 @@
 | 02-port-crm-analytics-ui | 01 | 8min | 3 | 3 |
 | 02-port-crm-analytics-ui | 02 | 14min | 2 | 2 |
 | 02-port-crm-analytics-ui | 03 | 42min | 2 | 3 |
+| Phase 02-port-crm-analytics-ui P04 | 9min | 2 tasks | 2 files |
 
 ## Last Session
 
-- **Stopped at:** Completed 02-03-PLAN.md — KanbanBoard component + deals page with drag-and-drop pipeline, create/edit modal, stage auto-seed
+- **Stopped at:** Completed 02-04-PLAN.md — Tasks CRUD with priority badges, edit modal, assignee select, filter tabs, and migration
 - **Timestamp:** 2026-03-24
 
 ---
