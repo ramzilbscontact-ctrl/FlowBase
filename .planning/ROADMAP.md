@@ -201,7 +201,7 @@ Plans:
 - Generate payslip for employee → correct net pay (gross - CNAS - IRG)
 - Manager can approve leave requests, employee sees status change
 
-**Plans:** 5 plans
+**Plans:** 3/5 plans executed
 
 Plans:
 - [x] 03-01-PLAN.md — Facturation CRUD: invoices (line items + status filter), quotes (convert-to-invoice), payments list

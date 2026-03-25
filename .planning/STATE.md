@@ -73,6 +73,9 @@
 - [Phase 03-02]: Stripe webhook reads owner_id from invoice row (not getUser()) — webhook is unauthenticated server-to-server, getUser() returns null
 - [Phase 03-02]: isPublicRoute guard in proxy.ts excludes /api/stripe/webhook and /pay/* from auth redirect
 - [Phase 03-02]: use(params) React hook for pay page params — Next.js 16 passes page params as Promise to client components
+- [Phase 03-port-facturation-comptabilite-rh-paie-ui]: No delete on accounts — accounts with journal_lines must not be deleted; Edit-only UI enforced [03-03]
+- [Phase 03-port-facturation-comptabilite-rh-paie-ui]: Single-amount double-entry mode — debit_account and credit_account receive identical amount ensuring balance by construction [03-03]
+- [Phase 03-port-facturation-comptabilite-rh-paie-ui]: Client-side aggregation for reports — sum debits/credits per account type from journal_lines join [03-03]
 
 ## Key Context
 
@@ -153,10 +156,11 @@
 | Phase 02-port-crm-analytics-ui P05 | 8min | 2 tasks | 3 files |
 | 03-port-facturation-comptabilite-rh-paie-ui | 01 | 9min | 2 | 3 |
 | 03-port-facturation-comptabilite-rh-paie-ui | 02 | 14min | 2 | 12 |
+| Phase 03-port-facturation-comptabilite-rh-paie-ui P03 | 7min | 3 tasks | 5 files |
 
 ## Last Session
 
-- **Stopped at:** Completed 03-02-PLAN.md — PDF generation (invoices + payslips), Stripe PaymentIntent + webhook, Resend email delivery, public pay page
+- **Stopped at:** Completed 03-03-PLAN.md — chart of accounts, journal double-entry, ledger running balance, financial reports
 - **Timestamp:** 2026-03-25
 
 ---
