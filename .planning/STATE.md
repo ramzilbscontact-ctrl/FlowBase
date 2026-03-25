@@ -1,8 +1,8 @@
 # Project State
 
 **Project:** Radiance ERP Migration → Next.js 16 + Supabase + Vercel
-**Last updated:** 2026-03-24
-**Status:** 🟢 Executing — Phase 2 (Port CRM + Analytics UI)
+**Last updated:** 2026-03-25
+**Status:** 🟢 Executing — Phase 3 (Facturation + Comptabilité + RH/Paie)
 
 ---
 
