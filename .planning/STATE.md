@@ -2,7 +2,7 @@
 
 **Project:** Radiance ERP Migration → Next.js 16 + Supabase + Vercel
 **Last updated:** 2026-03-25
-**Status:** 🟢 Executing — Phase 3 (Facturation + Comptabilité + RH/Paie)
+**Status:** 🟢 Phase 3 Complete ✅ — Ready for Phase 4 (Data Migration)
 
 ---
 
@@ -15,8 +15,8 @@
 | Requirements written | ✅ `.planning/REQUIREMENTS.md` (10 FR modules, 6 TR groups) |
 | Roadmap created | ✅ `.planning/ROADMAP.md` (6 phases) |
 | Research done | ✅ `.planning/research/NEXTJS_PATTERNS.md` |
-| Active phase | Phase 3 — Port Facturation + Comptabilité + RH/Paie UI |
-| Current plan | Phase 3, Plan 4 — complete ✅ (next: Plan 5 if exists, else Phase 4) |
+| Active phase | Phase 4 — Data Migration (MongoDB → Supabase) |
+| Current plan | Phase 3 UAT complete ✅ — Phase 4 not yet started |
 
 ---
 
@@ -34,7 +34,7 @@
 |-------|------|--------|
 | 1 | Foundation + Schema + Auth | ✅ Complete (4/4 plans) |
 | 2 | Port CRM + Analytics UI | ✅ Complete (5/5 plans) |
-| 3 | Port Facturation + Comptabilité + RH/Paie UI | 🟡 In progress — 4/? plans complete |
+| 3 | Port Facturation + Comptabilité + RH/Paie UI | ✅ Complete (5/5 plans, UAT passed) |
 | 4 | Data Migration (MongoDB → Supabase) | ⬜ Not started |
 | 5 | Google Workspace Integration | ⬜ Not started |
 | 6 | Testing, CI/CD & Production Deployment | ⬜ Not started |
@@ -163,7 +163,7 @@
 
 ## Last Session
 
-- **Stopped at:** Completed 03-04-PLAN.md — employees CRUD, departments CRUD, leave management, payroll generation IRG/CNAS
+- **Stopped at:** Phase 3 UAT complete (03-05-SUMMARY.md). All 11 modules verified in preview. Ready for Phase 4.
 - **Timestamp:** 2026-03-25
 
 ---
