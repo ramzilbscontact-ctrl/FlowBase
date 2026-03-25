@@ -40,8 +40,15 @@ export async function proxy(request: NextRequest) {
     request.nextUrl.pathname.startsWith('/callback') ||
     request.nextUrl.pathname.startsWith('/2fa')
 
+  // Public routes: accessible without auth (Stripe webhook + client payment page)
+  // Stripe webhook must receive raw body unmodified — must not hit auth redirect
+  // /pay/* is the public client-facing payment page (no login required)
+  const isPublicRoute =
+    request.nextUrl.pathname.startsWith('/api/stripe/webhook') ||
+    request.nextUrl.pathname.startsWith('/pay')
+
   // Redirect unauthenticated users to /login
-  if (!user && !isAuthRoute) {
+  if (!user && !isAuthRoute && !isPublicRoute) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
