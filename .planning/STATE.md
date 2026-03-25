@@ -15,8 +15,8 @@
 | Requirements written | ✅ `.planning/REQUIREMENTS.md` (10 FR modules, 6 TR groups) |
 | Roadmap created | ✅ `.planning/ROADMAP.md` (6 phases) |
 | Research done | ✅ `.planning/research/NEXTJS_PATTERNS.md` |
-| Active phase | Phase 2 — Port CRM + Analytics UI |
-| Current plan | Phase 2, Plan 4 — next to execute |
+| Active phase | Phase 3 — Port Facturation + Comptabilité + RH/Paie UI |
+| Current plan | Phase 3, Plan 2 — next to execute |
 
 ---
 
@@ -25,15 +25,16 @@
 **M1 — Full Stack Migration**
 - 6 phases total (compressed from 10 — existing React UI reused directly)
 - Phase 1 complete ✅
-- Current phase: Phase 2 — Port CRM + Analytics UI
+- Phase 2 complete ✅
+- Current phase: Phase 3 — Port Facturation + Comptabilité + RH/Paie UI
 
 ## Phase Progress
 
 | Phase | Name | Status |
 |-------|------|--------|
 | 1 | Foundation + Schema + Auth | ✅ Complete (4/4 plans) |
-| 2 | Port CRM + Analytics UI | 🟡 In progress — 3/5 plans complete (contacts+companies+deals Kanban done) |
-| 3 | Port Facturation + Comptabilité + RH/Paie UI | ⬜ Not started |
+| 2 | Port CRM + Analytics UI | ✅ Complete (5/5 plans) |
+| 3 | Port Facturation + Comptabilité + RH/Paie UI | 🟡 In progress — 1/? plans complete |
 | 4 | Data Migration (MongoDB → Supabase) | ⬜ Not started |
 | 5 | Google Workspace Integration | ⬜ Not started |
 | 6 | Testing, CI/CD & Production Deployment | ⬜ Not started |
@@ -65,6 +66,9 @@
 - [Phase 02-04]: editingTask state drives modal mode (null=create, non-null=edit) with single saveMut branching on value
 - [Phase 02-05]: recharts imported directly (not via dynamic()) — page is already use client, no SSR risk
 - [Phase 02-05]: Client-side groupBy for deals by stage — avoids PostgREST GROUP BY complexity
+- [Phase 03-01]: Invoice edit modal opens with empty line-items row — existing invoice_items are deleted and re-inserted on save (avoids pre-load query)
+- [Phase 03-01]: quotes use subtotal input (not line items) since quotes table has no invoice_items child in schema
+- [Phase 03-01]: payments page is read-only — no manual payment creation UI per plan spec
 
 ## Key Context
 
@@ -143,11 +147,12 @@
 | 02-port-crm-analytics-ui | 03 | 42min | 2 | 3 |
 | Phase 02-port-crm-analytics-ui P04 | 9min | 2 tasks | 2 files |
 | Phase 02-port-crm-analytics-ui P05 | 8min | 2 tasks | 3 files |
+| 03-port-facturation-comptabilite-rh-paie-ui | 01 | 9min | 2 | 3 |
 
 ## Last Session
 
-- **Stopped at:** Completed 02-05-PLAN.md — Analytics dashboard with recharts KPI cards, deals-by-stage bar chart, and audit log viewer
-- **Timestamp:** 2026-03-24
+- **Stopped at:** Completed 03-01-PLAN.md — Facturation CRUD pages (invoices+quotes+payments) with Supabase mutations and status filter
+- **Timestamp:** 2026-03-25
 
 ---
 

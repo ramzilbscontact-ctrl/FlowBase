@@ -41,13 +41,13 @@
 
 | ID | Requirement | Source | Priority |
 |----|-------------|--------|----------|
-| FR-03-1 | Invoices: create, edit, preview as PDF, send by email, mark as paid | Existing | Must |
-| FR-03-2 | Quotes: create, edit, convert to invoice | Existing | Must |
-| FR-03-3 | Payment tracking: record payments against invoices, show balance due | Existing | Must |
+| FR-03-1 | Invoices: create, edit, preview as PDF, send by email, mark as paid | Existing | Must | ✅ 03-01 |
+| FR-03-2 | Quotes: create, edit, convert to invoice | Existing | Must | ✅ 03-01 |
+| FR-03-3 | Payment tracking: record payments against invoices, show balance due | Existing | Must | ✅ 03-01 |
 | FR-03-4 | Stripe integration: create payment intent, handle webhook events (payment_intent.succeeded, invoice.paid) | Existing | Must |
 | FR-03-5 | Email notifications: send invoice/reminder emails via Gmail SMTP or Supabase SMTP | Existing | Must |
-| FR-03-6 | Invoice numbering: auto-increment invoice number with configurable prefix | Existing | Must |
-| FR-03-7 | Tax calculation: apply configurable tax rates to line items | Existing | Must |
+| FR-03-6 | Invoice numbering: auto-increment invoice number with configurable prefix | Existing | Must | ✅ 03-01 |
+| FR-03-7 | Tax calculation: apply configurable tax rates to line items | Existing | Must | ✅ 03-01 |
 | FR-03-8 | Client portal: public link to view/pay invoice (no login required for client) | Existing | Should |
 
 ### FR-04 — Comptabilité Module
