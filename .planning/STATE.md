@@ -16,7 +16,7 @@
 | Roadmap created | ✅ `.planning/ROADMAP.md` (6 phases) |
 | Research done | ✅ `.planning/research/NEXTJS_PATTERNS.md` |
 | Active phase | Phase 3 — Port Facturation + Comptabilité + RH/Paie UI |
-| Current plan | Phase 3, Plan 3 — next to execute |
+| Current plan | Phase 3, Plan 4 — complete ✅ (next: Plan 5 if exists, else Phase 4) |
 
 ---
 
@@ -34,7 +34,7 @@
 |-------|------|--------|
 | 1 | Foundation + Schema + Auth | ✅ Complete (4/4 plans) |
 | 2 | Port CRM + Analytics UI | ✅ Complete (5/5 plans) |
-| 3 | Port Facturation + Comptabilité + RH/Paie UI | 🟡 In progress — 2/? plans complete |
+| 3 | Port Facturation + Comptabilité + RH/Paie UI | 🟡 In progress — 4/? plans complete |
 | 4 | Data Migration (MongoDB → Supabase) | ⬜ Not started |
 | 5 | Google Workspace Integration | ⬜ Not started |
 | 6 | Testing, CI/CD & Production Deployment | ⬜ Not started |
@@ -76,6 +76,8 @@
 - [Phase 03-port-facturation-comptabilite-rh-paie-ui]: No delete on accounts — accounts with journal_lines must not be deleted; Edit-only UI enforced [03-03]
 - [Phase 03-port-facturation-comptabilite-rh-paie-ui]: Single-amount double-entry mode — debit_account and credit_account receive identical amount ensuring balance by construction [03-03]
 - [Phase 03-port-facturation-comptabilite-rh-paie-ui]: Client-side aggregation for reports — sum debits/credits per account type from journal_lines join [03-03]
+- [Phase 03-04]: calculatePayslip uses exact Algerian 2024 IRG brackets (0%/23%/27%/30%/35%) on (gross - CNAS) annualized income
+- [Phase 03-04]: Payroll page uses inline useMemo preview (no modal) — two-panel lg:grid-cols-2 layout; 23505 duplicate payslip caught with toast error
 
 ## Key Context
 
@@ -157,10 +159,11 @@
 | 03-port-facturation-comptabilite-rh-paie-ui | 01 | 9min | 2 | 3 |
 | 03-port-facturation-comptabilite-rh-paie-ui | 02 | 14min | 2 | 12 |
 | Phase 03-port-facturation-comptabilite-rh-paie-ui P03 | 7min | 3 tasks | 5 files |
+| Phase 03-port-facturation-comptabilite-rh-paie-ui P04 | 11min | 2 tasks | 6 files |
 
 ## Last Session
 
-- **Stopped at:** Completed 03-03-PLAN.md — chart of accounts, journal double-entry, ledger running balance, financial reports
+- **Stopped at:** Completed 03-04-PLAN.md — employees CRUD, departments CRUD, leave management, payroll generation IRG/CNAS
 - **Timestamp:** 2026-03-25
 
 ---
