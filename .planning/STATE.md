@@ -16,7 +16,7 @@
 | Roadmap created | ✅ `.planning/ROADMAP.md` (6 phases) |
 | Research done | ✅ `.planning/research/NEXTJS_PATTERNS.md` |
 | Active phase | Phase 3 — Port Facturation + Comptabilité + RH/Paie UI |
-| Current plan | Phase 3, Plan 2 — next to execute |
+| Current plan | Phase 3, Plan 3 — next to execute |
 
 ---
 
@@ -34,7 +34,7 @@
 |-------|------|--------|
 | 1 | Foundation + Schema + Auth | ✅ Complete (4/4 plans) |
 | 2 | Port CRM + Analytics UI | ✅ Complete (5/5 plans) |
-| 3 | Port Facturation + Comptabilité + RH/Paie UI | 🟡 In progress — 1/? plans complete |
+| 3 | Port Facturation + Comptabilité + RH/Paie UI | 🟡 In progress — 2/? plans complete |
 | 4 | Data Migration (MongoDB → Supabase) | ⬜ Not started |
 | 5 | Google Workspace Integration | ⬜ Not started |
 | 6 | Testing, CI/CD & Production Deployment | ⬜ Not started |
@@ -69,6 +69,10 @@
 - [Phase 03-01]: Invoice edit modal opens with empty line-items row — existing invoice_items are deleted and re-inserted on save (avoids pre-load query)
 - [Phase 03-01]: quotes use subtotal input (not line items) since quotes table has no invoice_items child in schema
 - [Phase 03-01]: payments page is read-only — no manual payment creation UI per plan spec
+- [Phase 03-02]: renderToBuffer used in all PDF Route Handlers — PDFDownloadLink/PDFViewer are browser-only and crash in Node/server context
+- [Phase 03-02]: Stripe webhook reads owner_id from invoice row (not getUser()) — webhook is unauthenticated server-to-server, getUser() returns null
+- [Phase 03-02]: isPublicRoute guard in proxy.ts excludes /api/stripe/webhook and /pay/* from auth redirect
+- [Phase 03-02]: use(params) React hook for pay page params — Next.js 16 passes page params as Promise to client components
 
 ## Key Context
 
@@ -148,10 +152,11 @@
 | Phase 02-port-crm-analytics-ui P04 | 9min | 2 tasks | 2 files |
 | Phase 02-port-crm-analytics-ui P05 | 8min | 2 tasks | 3 files |
 | 03-port-facturation-comptabilite-rh-paie-ui | 01 | 9min | 2 | 3 |
+| 03-port-facturation-comptabilite-rh-paie-ui | 02 | 14min | 2 | 12 |
 
 ## Last Session
 
-- **Stopped at:** Completed 03-01-PLAN.md — Facturation CRUD pages (invoices+quotes+payments) with Supabase mutations and status filter
+- **Stopped at:** Completed 03-02-PLAN.md — PDF generation (invoices + payslips), Stripe PaymentIntent + webhook, Resend email delivery, public pay page
 - **Timestamp:** 2026-03-25
 
 ---

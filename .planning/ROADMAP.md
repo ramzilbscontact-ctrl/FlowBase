@@ -205,7 +205,7 @@ Plans:
 
 Plans:
 - [x] 03-01-PLAN.md — Facturation CRUD: invoices (line items + status filter), quotes (convert-to-invoice), payments list
-- [ ] 03-02-PLAN.md — PDF Route Handlers + Stripe PaymentIntent + webhook + Resend email + public /pay page
+- [x] 03-02-PLAN.md — PDF Route Handlers + Stripe PaymentIntent + webhook + Resend email + public /pay page
 - [ ] 03-03-PLAN.md — Comptabilité: chart of accounts (grouped CRUD) + journal entries (double-entry) + financial reports
 - [ ] 03-04-PLAN.md — RH/Paie: employees + departments + leaves (approve/reject) + payroll generation (IRG/CNAS)
 - [ ] 03-05-PLAN.md — UAT: human verification of all Phase 3 flows
