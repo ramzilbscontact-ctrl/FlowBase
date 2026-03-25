@@ -7,7 +7,7 @@ import {
   FileText, Receipt, CreditCard, BookOpen, Calendar,
   Workflow, BarChart3, Mail, MessageCircle, Instagram,
   Settings, ChevronLeft, ChevronRight, UserCheck, Package,
-  LayoutList, BookMarked,
+  LayoutList, BookMarked, CalendarDays, Wallet,
   type LucideProps,
 } from 'lucide-react'
 import { useState, type FC } from 'react'
@@ -37,7 +37,9 @@ const nav: NavEntry[] = [
   { label: 'Rapports',       icon: BarChart3,       to: '/dashboard/reports' },
   { section: 'RH' },
   { label: 'Employés',       icon: UserCheck,       to: '/dashboard/employees' },
-  { label: 'Congés',         icon: Calendar,        to: '/dashboard/leaves' },
+  { label: 'Départements',   icon: Building2,       to: '/dashboard/departments' },
+  { label: 'Congés',         icon: CalendarDays,    to: '/dashboard/leaves' },
+  { label: 'Paie',           icon: Wallet,          to: '/dashboard/payroll' },
   { section: 'Outils' },
   { label: 'Calendrier',     icon: Calendar,        to: '/dashboard/calendar' },
   { label: 'Workflows',      icon: Workflow,        to: '/dashboard/workflows' },
