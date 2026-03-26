@@ -271,6 +271,13 @@ The schema must be finalized and validated with real data before migrating produ
 ### Dependencies
 - Phases 1-3 complete (schema finalized, app functional)
 
+**Plans:** 3 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — Python ETL script: extract.py, transform.py (19 collections), migrate.py orchestrator outputting FK-ordered SQL files
+- [ ] 04-02-PLAN.md — User migration via Supabase Admin API (bcrypt hash import) + load_data.py bulk SQL loader
+- [ ] 04-03-PLAN.md — validate.py (count parity, FK integrity, spot-checks) + migration README runbook + .env.production.example
+
 ---
 
 ## Phase 5: Google Workspace Integration
