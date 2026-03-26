@@ -52,3 +52,10 @@ htmlcov/
 # Logs
 *.log
 logs/
+
+# Migration outputs — generated artifacts, not source
+migration/validation_report.json
+migration/id_map.json
+migration/user_id_map.json
+migration/output/
+migration/.env.migration
