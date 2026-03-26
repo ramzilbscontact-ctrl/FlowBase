@@ -4,9 +4,10 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
-import { Users, Trash2, Pencil } from 'lucide-react'
+import { Users, Trash2, Pencil, Mail } from 'lucide-react'
 import { PageShell, TableHead, EmptyRow, TableRow } from '@/components/ui/PageShell'
 import { Modal } from '@/components/ui/Modal'
+import { ComposeModal } from '@/components/google/ComposeModal'
 import type { Database } from '@/lib/types/database.types'
 
 type ContactRow = Database['public']['Tables']['contacts']['Row']
@@ -19,6 +20,8 @@ export default function ContactsPage() {
   const [search, setSearch] = useState('')
   const [modal, setModal] = useState(false)
   const [editingContact, setEditingContact] = useState<ContactRow | null>(null)
+  const [composeOpen, setComposeOpen] = useState(false)
+  const [composeTo, setComposeTo] = useState('')
   const [form, setForm] = useState({
     first_name: '',
     last_name: '',
@@ -26,6 +29,11 @@ export default function ContactsPage() {
     phone: '',
     tags: '',
   })
+
+  function openCompose(email: string) {
+    setComposeTo(email)
+    setComposeOpen(true)
+  }
 
   function openEdit(contact: ContactRow) {
     setEditingContact(contact)
@@ -181,8 +189,8 @@ export default function ContactsPage() {
             contacts.map((c) => {
               const tagList = Array.isArray(c.tags)
                 ? c.tags
-                : c.tags
-                ? c.tags.split(',').map((t: string) => t.trim())
+                : typeof c.tags === 'string'
+                ? (c.tags as string).split(',').map((t: string) => t.trim())
                 : []
               return (
                 <TableRow key={c.id}>
@@ -212,6 +220,15 @@ export default function ContactsPage() {
                   </td>
                   <td className="px-4 py-3 text-right">
                     <div className="inline-flex items-center gap-1 justify-end">
+                      {c.email && (
+                        <button
+                          onClick={() => openCompose(c.email!)}
+                          className="p-1.5 rounded hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition"
+                          title="Envoyer un email"
+                        >
+                          <Mail size={15} />
+                        </button>
+                      )}
                       <button
                         onClick={() => openEdit(c)}
                         className="p-1.5 rounded hover:bg-blue-50 text-gray-400 hover:text-blue-500 transition"
@@ -328,6 +345,13 @@ export default function ContactsPage() {
           </div>
         </form>
       </Modal>
+
+      <ComposeModal
+        key={composeTo}
+        open={composeOpen}
+        onClose={() => setComposeOpen(false)}
+        defaultTo={composeTo}
+      />
     </>
   )
 }

@@ -43,9 +43,11 @@ export async function proxy(request: NextRequest) {
   // Public routes: accessible without auth (Stripe webhook + client payment page)
   // Stripe webhook must receive raw body unmodified — must not hit auth redirect
   // /pay/* is the public client-facing payment page (no login required)
+  // /api/google/callback receives Google's OAuth redirect — does its own getUser() check internally
   const isPublicRoute =
     request.nextUrl.pathname.startsWith('/api/stripe/webhook') ||
-    request.nextUrl.pathname.startsWith('/pay')
+    request.nextUrl.pathname.startsWith('/pay') ||
+    request.nextUrl.pathname.startsWith('/api/google/callback') // Google OAuth redirect
 
   // Redirect unauthenticated users to /login
   if (!user && !isAuthRoute && !isPublicRoute) {

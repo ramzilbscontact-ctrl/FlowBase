@@ -1,0 +1,39 @@
+import Image from 'next/image'
+import { cn } from '@/lib/utils/cn'
+
+interface LogoProps {
+  className?: string
+  size?: number
+  withText?: boolean
+  dark?: boolean
+}
+
+/**
+ * FlowBase "fb." logo — uses the original brand image directly.
+ */
+export function Logo({ className, size = 32, withText = false, dark = false }: LogoProps) {
+  return (
+    <div className={cn('inline-flex items-center gap-2.5', className)}>
+      <Image
+        src="/logo.png"
+        alt="FlowBase"
+        width={size}
+        height={size}
+        className={cn(
+          'rounded-lg object-contain',
+          dark && 'brightness-0 invert' // White version on dark backgrounds
+        )}
+        priority
+      />
+      {withText && (
+        <span className={cn(
+          'font-bold text-lg tracking-tight',
+          dark ? 'text-white' : 'text-slate-900'
+        )}>
+          flow<span className={dark ? 'text-slate-400' : 'text-slate-400'}>base</span>
+          <span className={dark ? 'text-white' : 'text-slate-900'}>.</span>
+        </span>
+      )}
+    </div>
+  )
+}

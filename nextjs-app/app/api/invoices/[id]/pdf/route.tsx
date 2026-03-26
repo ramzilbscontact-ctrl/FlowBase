@@ -16,7 +16,7 @@ export async function GET(
     .single()
   if (!invoice) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   const buffer = await renderToBuffer(<InvoicePDF invoice={invoice} />)
-  return new Response(buffer, {
+  return new Response(Uint8Array.from(buffer), {
     headers: {
       'Content-Type': 'application/pdf',
       'Content-Disposition': `attachment; filename="facture-${invoice.invoice_number}.pdf"`,

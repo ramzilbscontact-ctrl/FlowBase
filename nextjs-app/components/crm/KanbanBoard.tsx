@@ -15,7 +15,7 @@ import {
 } from '@dnd-kit/sortable'
 import { useDroppable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
-import { Trash2, Pencil } from 'lucide-react'
+import { Trash2, Pencil, CalendarPlus } from 'lucide-react'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -38,12 +38,14 @@ interface Deal {
   companies?: { name: string } | null
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 interface KanbanBoardProps {
   deals: Deal[]
   stages: Stage[]
   onStageDrop: (dealId: string, newStageId: string) => void
   onDelete: (dealId: string) => void
-  onEdit: (deal: Deal) => void
+  onEdit: (deal: any) => void
+  onCalendar?: (deal: Deal) => void
 }
 
 // ---------------------------------------------------------------------------
@@ -71,10 +73,12 @@ function DealCard({
   deal,
   onDelete,
   onEdit,
+  onCalendar,
 }: {
   deal: Deal
   onDelete: (id: string) => void
   onEdit: (deal: Deal) => void
+  onCalendar?: (deal: Deal) => void
 }) {
   const {
     attributes,
@@ -109,6 +113,18 @@ function DealCard({
           {deal.title}
         </p>
         <div className="flex items-center gap-0.5 shrink-0">
+          {onCalendar && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                onCalendar(deal)
+              }}
+              className="p-1 rounded hover:bg-green-50 text-gray-300 hover:text-green-600 transition"
+              aria-label="Ajouter au calendrier"
+            >
+              <CalendarPlus size={12} />
+            </button>
+          )}
           <button
             onClick={(e) => {
               e.stopPropagation()
@@ -165,11 +181,13 @@ function KanbanColumn({
   deals,
   onDelete,
   onEdit,
+  onCalendar,
 }: {
   stage: Stage
   deals: Deal[]
   onDelete: (id: string) => void
   onEdit: (deal: Deal) => void
+  onCalendar?: (deal: Deal) => void
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: stage.id })
   const badgeColor = getStageBadgeColor(stage.position)
@@ -201,6 +219,7 @@ function KanbanColumn({
               deal={deal}
               onDelete={onDelete}
               onEdit={onEdit}
+              onCalendar={onCalendar}
             />
           ))}
         </SortableContext>
@@ -225,6 +244,7 @@ export function KanbanBoard({
   onStageDrop,
   onDelete,
   onEdit,
+  onCalendar,
 }: KanbanBoardProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -276,6 +296,7 @@ export function KanbanBoard({
             deals={dealsByStage(stage.id)}
             onDelete={onDelete}
             onEdit={onEdit}
+            onCalendar={onCalendar}
           />
         ))}
       </div>

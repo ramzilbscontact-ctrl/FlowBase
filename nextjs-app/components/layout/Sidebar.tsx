@@ -11,6 +11,7 @@ import {
   type LucideProps,
 } from 'lucide-react'
 import { useState, type FC } from 'react'
+import { Logo } from '@/components/ui/Logo'
 
 type NavSection = { section: string; label?: undefined; icon?: undefined; to?: undefined }
 type NavItem = { label: string; icon: FC<LucideProps>; to: string; section?: undefined }
@@ -62,9 +63,7 @@ export default function Sidebar() {
     >
       {/* Logo */}
       <div className="flex items-center justify-between px-4 py-4 border-b border-gray-700">
-        {!collapsed && (
-          <span className="text-lg font-bold tracking-tight" style={{ color: '#60a5fa' }}>ERPro DZ</span>
-        )}
+        <Logo size={collapsed ? 28 : 32} withText={!collapsed} dark />
         <button
           onClick={() => setCollapsed(!collapsed)}
           className="p-1.5 rounded-lg hover:bg-gray-700 text-gray-400 hover:text-white transition"

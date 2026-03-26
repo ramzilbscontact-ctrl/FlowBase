@@ -129,7 +129,7 @@ export default function QuotesPage() {
 
   // --- Convert to invoice ---
   const convertMut = useMutation({
-    mutationFn: async (quote: QuoteRow) => {
+    mutationFn: async (quote: Partial<QuoteRow> & { id: string; total: number }) => {
       const {
         data: { user },
       } = await supabase.auth.getUser()

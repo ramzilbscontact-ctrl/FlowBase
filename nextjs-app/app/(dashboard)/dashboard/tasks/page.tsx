@@ -4,9 +4,10 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
-import { CheckSquare, Pencil, Trash2 } from 'lucide-react'
+import { CheckSquare, Pencil, Trash2, CalendarPlus } from 'lucide-react'
 import { PageShell, TableHead, EmptyRow, TableRow, Badge } from '@/components/ui/PageShell'
 import { Modal } from '@/components/ui/Modal'
+import { CalendarEventModal } from '@/components/google/CalendarEventModal'
 
 const supabase = createClient()
 
@@ -56,6 +57,8 @@ export default function TasksPage() {
   const [modal, setModal] = useState(false)
   const [editingTask, setEditingTask] = useState<Task | null>(null)
   const [filter, setFilter] = useState<'all' | 'pending' | 'done'>('all')
+  const [calendarOpen, setCalendarOpen] = useState(false)
+  const [calendarTask, setCalendarTask] = useState<{ title: string; date: string } | null>(null)
   const [form, setForm] = useState({
     title: '',
     due_date: '',
@@ -66,6 +69,14 @@ export default function TasksPage() {
   // -------------------------------------------------------------------------
   // Helpers
   // -------------------------------------------------------------------------
+
+  function openCalendar(task: Task) {
+    setCalendarTask({
+      title: task.title,
+      date: task.due_date ? task.due_date.slice(0, 10) : '',
+    })
+    setCalendarOpen(true)
+  }
 
   function openEdit(task: Task) {
     setEditingTask(task)
@@ -296,6 +307,13 @@ export default function TasksPage() {
                 <td className="px-4 py-3 text-right">
                   <div className="inline-flex items-center gap-1 justify-end">
                     <button
+                      onClick={() => openCalendar(t)}
+                      className="p-1.5 rounded hover:bg-green-50 text-gray-400 hover:text-green-600 transition"
+                      title="Ajouter au calendrier"
+                    >
+                      <CalendarPlus size={14} />
+                    </button>
+                    <button
                       onClick={() => openEdit(t)}
                       className="p-1.5 rounded hover:bg-blue-50 text-gray-400 hover:text-blue-500 transition"
                       title="Modifier"
@@ -417,6 +435,16 @@ export default function TasksPage() {
           </div>
         </form>
       </Modal>
+
+      {calendarTask && (
+        <CalendarEventModal
+          key={calendarTask.title + calendarTask.date}
+          open={calendarOpen}
+          onClose={() => setCalendarOpen(false)}
+          defaultTitle={calendarTask.title}
+          defaultDate={calendarTask.date}
+        />
+      )}
     </>
   )
 }

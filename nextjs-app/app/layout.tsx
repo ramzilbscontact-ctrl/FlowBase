@@ -14,8 +14,23 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Radiance ERP',
-  description: 'Enterprise Resource Planning',
+  title: {
+    default: 'FlowBase — ERP & CRM',
+    template: '%s | FlowBase',
+  },
+  description: 'ERP & CRM tout-en-un pour les entreprises algeriennes. CRM, Facturation, Comptabilite, RH, Paie.',
+  manifest: '/manifest.json',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'),
+  openGraph: {
+    title: 'FlowBase — ERP & CRM',
+    description: 'ERP & CRM tout-en-un pour les entreprises algeriennes',
+    siteName: 'FlowBase',
+    type: 'website',
+  },
+  themeColor: '#ffffff',
+  appleWebApp: {
+    title: 'FlowBase',
+  },
 }
 
 export default function RootLayout({

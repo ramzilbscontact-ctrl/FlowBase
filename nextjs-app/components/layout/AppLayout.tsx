@@ -34,7 +34,7 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   const pathname = usePathname()
-  const title = titles[pathname] || 'ERPro DZ'
+  const title = titles[pathname] || 'FlowBase'
 
   return (
     <div className="flex h-screen overflow-hidden">

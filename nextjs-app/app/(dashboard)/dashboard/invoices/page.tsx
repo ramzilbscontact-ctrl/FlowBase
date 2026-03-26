@@ -91,14 +91,14 @@ export default function InvoicesPage() {
   const qc = useQueryClient()
   const [statusFilter, setStatusFilter] = useState('')
   const [modal, setModal] = useState(false)
-  const [editingInvoice, setEditingInvoice] = useState<InvoiceRow | null>(null)
+  const [editingInvoice, setEditingInvoice] = useState<(Partial<InvoiceRow> & { id: string }) | null>(null)
   const [form, setForm] = useState<InvoiceForm>(emptyForm())
 
   function resetForm() {
     setForm(emptyForm())
   }
 
-  function openEdit(inv: InvoiceRow) {
+  function openEdit(inv: Partial<InvoiceRow> & { id: string }) {
     setEditingInvoice(inv)
     setForm({
       contact_id: inv.contact_id ?? '',

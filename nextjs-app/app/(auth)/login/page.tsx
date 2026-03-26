@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Logo } from '@/components/ui/Logo'
 
 type Mode = 'login' | 'signup'
 
@@ -122,10 +123,10 @@ export default function LoginPage() {
     <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-12 h-12 bg-violet-600 rounded-xl mb-4 shadow-md">
-          <span className="text-white font-bold text-xl">R</span>
+        <div className="inline-flex items-center justify-center mb-4">
+          <Logo size={48} />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900">Radiance ERP</h1>
+        <h1 className="text-2xl font-semibold text-slate-800">Flow<span className="text-slate-400">Base</span></h1>
         <p className="text-sm text-gray-500 mt-1">
           {mode === 'login' ? 'Connectez-vous à votre espace' : 'Créez votre compte gratuitement'}
         </p>

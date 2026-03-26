@@ -8,6 +8,7 @@ import { TrendingUp, Plus } from 'lucide-react'
 import type { Database } from '@/lib/types/database.types'
 import { KanbanBoard } from '@/components/crm/KanbanBoard'
 import { Modal } from '@/components/ui/Modal'
+import { CalendarEventModal } from '@/components/google/CalendarEventModal'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -51,6 +52,8 @@ export default function DealsPage() {
   // --- modal state ---
   const [modal, setModal] = useState(false)
   const [editingDeal, setEditingDeal] = useState<DealRow | null>(null)
+  const [calendarOpen, setCalendarOpen] = useState(false)
+  const [calendarDealTitle, setCalendarDealTitle] = useState('')
   const [form, setForm] = useState({
     title: '',
     value: '',
@@ -62,6 +65,11 @@ export default function DealsPage() {
   // ---------------------------------------------------------------------------
   // Helpers
   // ---------------------------------------------------------------------------
+
+  function openCalendar(title: string) {
+    setCalendarDealTitle(title)
+    setCalendarOpen(true)
+  }
 
   function openEdit(deal: DealRow) {
     setEditingDeal(deal)
@@ -300,6 +308,7 @@ export default function DealsPage() {
         }
         onDelete={(id) => deleteMut.mutate(id)}
         onEdit={openEdit}
+        onCalendar={(deal) => openCalendar(deal.title)}
       />
 
       {/* Create / Edit modal */}
@@ -436,6 +445,13 @@ export default function DealsPage() {
           </div>
         </form>
       </Modal>
+
+      <CalendarEventModal
+        key={calendarDealTitle}
+        open={calendarOpen}
+        onClose={() => setCalendarOpen(false)}
+        defaultTitle={calendarDealTitle}
+      />
     </div>
   )
 }

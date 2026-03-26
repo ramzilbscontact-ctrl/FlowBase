@@ -17,7 +17,7 @@ export async function GET(
   if (!payslip) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   const buffer = await renderToBuffer(<PayslipPDF payslip={payslip} />)
   const name = payslip.employees?.full_name?.replace(/\s+/g, '-').toLowerCase() ?? 'employe'
-  return new Response(buffer, {
+  return new Response(Uint8Array.from(buffer), {
     headers: {
       'Content-Type': 'application/pdf',
       'Content-Disposition': `attachment; filename="bulletin-${name}-${payslip.period_month}-${payslip.period_year}.pdf"`,
