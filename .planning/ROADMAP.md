@@ -310,6 +310,13 @@ Plans:
 ### Dependencies
 - Phase 1 (auth + google_tokens schema), Phase 2 (CRM contact detail page)
 
+**Plans:** 3 plans
+
+Plans:
+- [ ] 05-01-PLAN.md — Google OAuth token infrastructure: lib helpers (oauth, encrypt, tokens), OAuth Route Handlers (connect/callback/disconnect), Settings hub page, proxy.ts update
+- [ ] 05-02-PLAN.md — Gmail Route Handlers (list messages, send email) + Gmail inbox page + ComposeModal + contacts list per-row email action
+- [ ] 05-03-PLAN.md — Calendar Route Handlers (list events, create event) + Calendar page + CalendarEventModal + tasks and deals per-row calendar action
+
 ---
 
 ## Phase 6: Testing, CI/CD and Production Deployment
