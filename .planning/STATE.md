@@ -80,6 +80,8 @@
 - [Phase 03-04]: Payroll page uses inline useMemo preview (no modal) — two-panel lg:grid-cols-2 layout; 23505 duplicate payslip caught with toast error
 - [Phase 04-01]: UUID5 namespace: RFC 4122 DNS UUID (6ba7b810-...) as fixed migration namespace for deterministic, idempotent ObjectId->UUID conversion
 - [Phase 04-01]: escape() placed in utils.py for reuse across transform tests; enum coercion added in all transform functions to silently handle out-of-range MongoDB values
+- [Phase 04]: verify_hash_saved() queries auth.users.encrypted_password directly via psycopg2 to detect Supabase issue #1678 (hash not persisted by GoTrue Admin API)
+- [Phase 04]: load_data.py aborts on first SQL file failure; ON CONFLICT DO NOTHING makes re-runs safe [04-02]
 
 ## Key Context
 
@@ -163,10 +165,11 @@
 | Phase 03-port-facturation-comptabilite-rh-paie-ui P03 | 7min | 3 tasks | 5 files |
 | Phase 03-port-facturation-comptabilite-rh-paie-ui P04 | 11min | 2 tasks | 6 files |
 | Phase 04 P01 | 11 | 3 tasks | 8 files |
+| Phase 04 P04-02 | 12 | 2 tasks | 2 files |
 
 ## Last Session
 
-- **Stopped at:** Completed 04-01-PLAN.md
+- **Stopped at:** Completed 04-02-PLAN.md
 - **Timestamp:** 2026-03-25
 
 ---
