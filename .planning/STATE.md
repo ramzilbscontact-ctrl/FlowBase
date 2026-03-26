@@ -2,7 +2,7 @@
 
 **Project:** Radiance ERP Migration → Next.js 16 + Supabase + Vercel
 **Last updated:** 2026-03-25
-**Status:** 🟢 Phase 3 Complete ✅ — Ready for Phase 4 (Data Migration)
+**Status: 🟢 Phase 4 Complete ✅ — Ready for Phase 5 (Google Workspace)
 
 ---
 
@@ -15,7 +15,7 @@
 | Requirements written | ✅ `.planning/REQUIREMENTS.md` (10 FR modules, 6 TR groups) |
 | Roadmap created | ✅ `.planning/ROADMAP.md` (6 phases) |
 | Research done | ✅ `.planning/research/NEXTJS_PATTERNS.md` |
-| Active phase | Phase 4 — Data Migration (MongoDB → Supabase) |
+| Active phase | Phase 5 — Google Workspace Integration |
 | Current plan | Phase 3 UAT complete ✅ — Phase 4 not yet started |
 
 ---
@@ -35,7 +35,7 @@
 | 1 | Foundation + Schema + Auth | ✅ Complete (4/4 plans) |
 | 2 | Port CRM + Analytics UI | ✅ Complete (5/5 plans) |
 | 3 | Port Facturation + Comptabilité + RH/Paie UI | ✅ Complete (5/5 plans, UAT passed) |
-| 4 | Data Migration (MongoDB → Supabase) | ⬜ Not started |
+| 4 | Data Migration (MongoDB → Supabase) | ✅ Complete (3/3 plans, verified) |
 | 5 | Google Workspace Integration | ⬜ Not started |
 | 6 | Testing, CI/CD & Production Deployment | ⬜ Not started |
 
