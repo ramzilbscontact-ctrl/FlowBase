@@ -4,7 +4,9 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { InvoicePDF } from '@/components/pdf/InvoicePDF'
 
-const resend = new Resend(process.env.RESEND_API_KEY!)
+function getResend() {
+  return new Resend(process.env.RESEND_API_KEY!)
+}
 
 export async function POST(
   _req: Request,
@@ -24,7 +26,7 @@ export async function POST(
 
   const buffer = await renderToBuffer(<InvoicePDF invoice={invoice} />)
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from: process.env.RESEND_FROM_EMAIL ?? 'factures@yourdomain.com',
     to: toEmail,
     subject: `Facture ${invoice.invoice_number}`,

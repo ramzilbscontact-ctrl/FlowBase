@@ -2,7 +2,9 @@ import Stripe from 'stripe'
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!)
+}
 
 export async function POST(
   _req: Request,
@@ -16,7 +18,7 @@ export async function POST(
     .eq('id', id)
     .single()
   if (!invoice) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-  const intent = await stripe.paymentIntents.create({
+  const intent = await getStripe().paymentIntents.create({
     amount: Math.round((invoice.total ?? 0) * 100),
     currency: 'dzd',
     metadata: { invoice_id: invoice.id, invoice_number: invoice.invoice_number ?? '' },
