@@ -4,10 +4,11 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
-import { Users, Trash2, Pencil, Mail } from 'lucide-react'
+import { Users, Trash2, Pencil, Mail, Upload } from 'lucide-react'
 import { PageShell, TableHead, EmptyRow, TableRow } from '@/components/ui/PageShell'
 import { Modal } from '@/components/ui/Modal'
 import { ComposeModal } from '@/components/google/ComposeModal'
+import { CsvImportModal } from '@/components/contacts/CsvImportModal'
 import type { Database } from '@/lib/types/database.types'
 
 type ContactRow = Database['public']['Tables']['contacts']['Row']
@@ -22,6 +23,7 @@ export default function ContactsPage() {
   const [editingContact, setEditingContact] = useState<ContactRow | null>(null)
   const [composeOpen, setComposeOpen] = useState(false)
   const [composeTo, setComposeTo] = useState('')
+  const [importOpen, setImportOpen] = useState(false)
   const [form, setForm] = useState({
     first_name: '',
     last_name: '',
@@ -135,6 +137,14 @@ export default function ContactsPage() {
   })
 
   const searchInput = (
+    <div className="flex items-center gap-3">
+    <button
+      onClick={() => setImportOpen(true)}
+      className="flex items-center gap-1.5 border border-gray-200 text-gray-600 hover:bg-gray-50 px-3 py-2 rounded-lg text-sm font-medium transition"
+    >
+      <Upload size={15} />
+      Importer CSV
+    </button>
     <div className="relative max-w-sm">
       <svg
         className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
@@ -156,6 +166,7 @@ export default function ContactsPage() {
         placeholder="Rechercher un contact..."
         className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
       />
+    </div>
     </div>
   )
 
@@ -351,6 +362,12 @@ export default function ContactsPage() {
         open={composeOpen}
         onClose={() => setComposeOpen(false)}
         defaultTo={composeTo}
+      />
+
+      <CsvImportModal
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        onImported={() => qc.invalidateQueries({ queryKey: ['contacts'] })}
       />
     </>
   )
