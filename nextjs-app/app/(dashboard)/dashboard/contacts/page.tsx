@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
-import { Users, Trash2, Pencil, Mail, Upload } from 'lucide-react'
+import { Users, Trash2, Pencil, Mail, Upload, Loader2 } from 'lucide-react'
 import { PageShell, TableHead, EmptyRow, TableRow } from '@/components/ui/PageShell'
 import { Modal } from '@/components/ui/Modal'
 import { ComposeModal } from '@/components/google/ComposeModal'
@@ -24,6 +24,51 @@ export default function ContactsPage() {
   const [composeOpen, setComposeOpen] = useState(false)
   const [composeTo, setComposeTo] = useState('')
   const [importOpen, setImportOpen] = useState(false)
+  const [directImporting, setDirectImporting] = useState(false)
+
+  /** Direct CSV import — no preview, auto-detect & insert */
+  async function handleDirectImport() {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.csv,text/csv'
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (!file) return
+
+      setDirectImporting(true)
+      try {
+        const fd = new FormData()
+        fd.append('file', file)
+        const res = await fetch('/api/contacts/import-direct', {
+          method: 'POST',
+          body: fd,
+        })
+        const data = await res.json()
+
+        if (!res.ok) {
+          toast.error(data.error || "Erreur lors de l'import")
+          return
+        }
+
+        if (data.imported > 0) {
+          toast.success(`${data.imported} contact(s) importé(s)`)
+          qc.invalidateQueries({ queryKey: ['contacts'] })
+        } else {
+          toast.warning('Aucun contact importé')
+        }
+
+        if (data.errors?.length > 0) {
+          toast.info(`${data.errors.length} ligne(s) ignorée(s)`)
+        }
+      } catch {
+        toast.error('Erreur réseau')
+      } finally {
+        setDirectImporting(false)
+      }
+    }
+    input.click()
+  }
+
   const [form, setForm] = useState({
     first_name: '',
     last_name: '',
@@ -139,11 +184,16 @@ export default function ContactsPage() {
   const searchInput = (
     <div className="flex items-center gap-3">
     <button
-      onClick={() => setImportOpen(true)}
-      className="flex items-center gap-1.5 border border-gray-200 text-gray-600 hover:bg-gray-50 px-3 py-2 rounded-lg text-sm font-medium transition"
+      onClick={handleDirectImport}
+      disabled={directImporting}
+      className="flex items-center gap-1.5 border border-gray-200 text-gray-600 hover:bg-gray-50 px-3 py-2 rounded-lg text-sm font-medium transition disabled:opacity-60"
     >
-      <Upload size={15} />
-      Importer CSV
+      {directImporting ? (
+        <Loader2 size={15} className="animate-spin" />
+      ) : (
+        <Upload size={15} />
+      )}
+      {directImporting ? 'Import…' : 'Importer CSV'}
     </button>
     <div className="relative max-w-sm">
       <svg

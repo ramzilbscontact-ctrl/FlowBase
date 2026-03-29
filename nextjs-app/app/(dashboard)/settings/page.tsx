@@ -29,7 +29,13 @@ export default async function SettingsPage({
       )}
       {error && (
         <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-700">
-          Erreur de connexion Google. Veuillez réessayer.
+          {error === 'oauth_config_error'
+            ? 'Erreur de configuration OAuth. Vérifiez les variables d\'environnement Google.'
+            : error === 'oauth_denied'
+            ? 'Accès Google refusé. Assurez-vous que votre email est ajouté comme utilisateur test dans la console Google Cloud (OAuth en mode Testing).'
+            : error === 'token_exchange_failed'
+            ? 'Échec de l\'échange de token Google. Vérifiez que le Client ID et Secret sont corrects et que l\'URI de redirection est bien configurée.'
+            : 'Erreur de connexion Google. Veuillez réessayer.'}
         </div>
       )}
 
