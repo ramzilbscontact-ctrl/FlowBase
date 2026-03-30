@@ -111,6 +111,8 @@ export default function LoginPage() {
       options: {
         redirectTo: `${origin}/callback`,
         queryParams: { access_type: 'offline', prompt: 'consent' },
+        // Request Gmail + Calendar scopes at login — auto-connects Workspace
+        scopes: 'https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/calendar.events',
       },
     })
     if (error) {

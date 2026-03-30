@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { Shield, Chrome } from 'lucide-react'
+import { Shield, Chrome, Puzzle } from 'lucide-react'
 import { DisconnectButton } from '@/components/google/DisconnectButton'
 
 export default async function SettingsPage({
@@ -85,6 +85,24 @@ export default async function SettingsPage({
               </a>
             )}
           </div>
+        </div>
+      </div>
+      {/* Integrations Card */}
+      <div className="bg-white rounded-xl border border-gray-200 p-6 flex items-start gap-4">
+        <div className="rounded-lg bg-amber-100 p-2.5">
+          <Puzzle className="h-5 w-5 text-amber-600" />
+        </div>
+        <div className="flex-1">
+          <h2 className="font-semibold text-gray-900">Integrations</h2>
+          <p className="mt-1 text-sm text-gray-500">
+            Cles API, webhooks, Notion, n8n, Make et autres applications connectees.
+          </p>
+          <Link
+            href="/settings/integrations"
+            className="mt-3 inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md bg-amber-600 text-white hover:bg-amber-700"
+          >
+            Gerer les integrations
+          </Link>
         </div>
       </div>
     </div>
