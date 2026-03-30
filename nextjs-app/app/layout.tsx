@@ -15,21 +15,21 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: 'FlowBase — ERP & CRM',
-    template: '%s | FlowBase',
+    default: 'GetAgenzia — ERP & CRM',
+    template: '%s | GetAgenzia',
   },
   description: 'ERP & CRM tout-en-un pour les entreprises algeriennes. CRM, Facturation, Comptabilite, RH, Paie.',
   manifest: '/manifest.json',
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'),
   openGraph: {
-    title: 'FlowBase — ERP & CRM',
+    title: 'GetAgenzia — ERP & CRM',
     description: 'ERP & CRM tout-en-un pour les entreprises algeriennes',
-    siteName: 'FlowBase',
+    siteName: 'GetAgenzia',
     type: 'website',
   },
   themeColor: '#ffffff',
   appleWebApp: {
-    title: 'FlowBase',
+    title: 'GetAgenzia',
   },
 }
 

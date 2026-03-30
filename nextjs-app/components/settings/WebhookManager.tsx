@@ -128,7 +128,7 @@ export default function WebhookManager() {
               type="url"
               value={newUrl}
               onChange={e => setNewUrl(e.target.value)}
-              placeholder="https://example.com/webhooks/flowbase"
+              placeholder="https://example.com/webhooks/getagenzia"
               className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>

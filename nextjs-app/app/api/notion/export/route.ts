@@ -89,7 +89,7 @@ export async function POST(request: Request) {
       const properties = buildDatabaseProperties(exportType)
       const db = await notion.databases.create({
         parent: { page_id: parentPageId, type: 'page_id' },
-        title: [{ type: 'text', text: { content: `FlowBase CRM — ${capitalize(exportType)}` } }],
+        title: [{ type: 'text', text: { content: `GetAgenzia CRM — ${capitalize(exportType)}` } }],
         properties,
       })
       databaseId = db.id

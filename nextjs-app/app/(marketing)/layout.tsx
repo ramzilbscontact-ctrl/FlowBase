@@ -1,7 +1,4 @@
 import type { Metadata } from 'next'
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
-import { LandingPage } from './(marketing)/LandingContent'
 
 export const metadata: Metadata = {
   title: 'GetAgenzia — Le CRM intelligent qui close vos deals',
@@ -16,15 +13,10 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function RootPage() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (user) {
-    redirect('/dashboard')
-  }
-
-  return <LandingPage />
+export default function MarketingLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return <>{children}</>
 }

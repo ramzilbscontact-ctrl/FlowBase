@@ -3,14 +3,14 @@ import { NextResponse } from 'next/server'
 
 export async function GET() {
   return NextResponse.json({
-    name: 'FlowBase CRM Public API',
+    name: 'GetAgenzia CRM Public API',
     version: '1.0.0',
     base_url: '/api/v1',
     authentication: {
       type: 'bearer',
       header: 'Authorization: Bearer <api_key>',
       description:
-        'All endpoints require a valid API key. Generate keys from the FlowBase dashboard settings. Keys use SHA-256 hashing and are prefixed with "fb_live_".',
+        'All endpoints require a valid API key. Generate keys from the GetAgenzia dashboard settings. Keys use SHA-256 hashing and are prefixed with "fb_live_".',
     },
     pagination: {
       description: 'List endpoints support pagination via query params.',
@@ -32,9 +32,9 @@ export async function GET() {
       description:
         'Configure webhooks in the dashboard to receive real-time notifications for CRM events. Payloads are signed with HMAC-SHA256.',
       headers: {
-        'X-FlowBase-Event': 'Event name (e.g. contact.created)',
-        'X-FlowBase-Signature': 'HMAC-SHA256 signature of the request body',
-        'X-FlowBase-Timestamp': 'ISO 8601 timestamp of the event',
+        'X-GetAgenzia-Event': 'Event name (e.g. contact.created)',
+        'X-GetAgenzia-Signature': 'HMAC-SHA256 signature of the request body',
+        'X-GetAgenzia-Timestamp': 'ISO 8601 timestamp of the event',
       },
       events: [
         'contact.created',

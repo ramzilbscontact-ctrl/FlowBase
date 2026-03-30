@@ -792,33 +792,60 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          company_name: string | null
           created_at: string
+          email: string | null
           failed_login_attempts: number
           full_name: string | null
           id: string
+          industry: string | null
           locked_until: string | null
+          onboarding_completed: boolean
+          plan: string
+          plan_expires_at: string | null
           role: string
+          stripe_customer_id: string | null
+          team_size: string | null
           updated_at: string
+          user_role: string | null
         }
         Insert: {
           avatar_url?: string | null
+          company_name?: string | null
           created_at?: string
+          email?: string | null
           failed_login_attempts?: number
           full_name?: string | null
           id: string
+          industry?: string | null
           locked_until?: string | null
+          onboarding_completed?: boolean
+          plan?: string
+          plan_expires_at?: string | null
           role?: string
+          stripe_customer_id?: string | null
+          team_size?: string | null
           updated_at?: string
+          user_role?: string | null
         }
         Update: {
           avatar_url?: string | null
+          company_name?: string | null
           created_at?: string
+          email?: string | null
           failed_login_attempts?: number
           full_name?: string | null
           id?: string
+          industry?: string | null
           locked_until?: string | null
+          onboarding_completed?: boolean
+          plan?: string
+          plan_expires_at?: string | null
           role?: string
+          stripe_customer_id?: string | null
+          team_size?: string | null
           updated_at?: string
+          user_role?: string | null
         }
         Relationships: []
       }

@@ -9,14 +9,14 @@ interface LogoProps {
 }
 
 /**
- * FlowBase "fb." logo — uses the original brand image directly.
+ * GetAgenzia "fb." logo — uses the original brand image directly.
  */
 export function Logo({ className, size = 32, withText = false, dark = false }: LogoProps) {
   return (
     <div className={cn('inline-flex items-center gap-2.5', className)}>
       <Image
         src="/logo.png"
-        alt="FlowBase"
+        alt="GetAgenzia"
         width={size}
         height={size}
         className={cn(
