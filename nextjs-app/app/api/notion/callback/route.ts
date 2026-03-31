@@ -2,6 +2,7 @@ export const runtime = 'nodejs'
 
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { encrypt } from '@/lib/google/encrypt'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -58,7 +59,7 @@ export async function GET(request: Request) {
       .upsert(
         {
           user_id: user.id,
-          access_token: tokenData.access_token,
+          access_token: encrypt(tokenData.access_token),
           workspace_id: tokenData.workspace_id ?? null,
           workspace_name: tokenData.workspace_name ?? null,
           bot_id: tokenData.bot_id ?? null,

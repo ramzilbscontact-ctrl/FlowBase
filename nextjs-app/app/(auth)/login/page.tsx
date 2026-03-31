@@ -128,7 +128,7 @@ export default function LoginPage() {
         <div className="inline-flex items-center justify-center mb-4">
           <Logo size={48} />
         </div>
-        <h1 className="text-2xl font-semibold text-slate-800">Flow<span className="text-slate-400">Base</span></h1>
+        <h1 className="text-2xl font-semibold text-slate-800">Get<span className="text-indigo-600">Agenzia</span></h1>
         <p className="text-sm text-gray-500 mt-1">
           {mode === 'login' ? 'Connectez-vous à votre espace' : 'Créez votre compte gratuitement'}
         </p>

@@ -20,12 +20,13 @@ export const metadata: Metadata = {
   },
   description: 'ERP & CRM tout-en-un pour les entreprises algeriennes. CRM, Facturation, Comptabilite, RH, Paie.',
   manifest: '/manifest.json',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.agenzia.uk'),
   openGraph: {
-    title: 'GetAgenzia — ERP & CRM',
-    description: 'ERP & CRM tout-en-un pour les entreprises algeriennes',
+    title: 'GetAgenzia — Le CRM intelligent qui close vos deals',
+    description: 'Pipeline AI-powered, intégrations natives, et assistant intelligent. CRM gratuit pour les équipes commerciales.',
     siteName: 'GetAgenzia',
     type: 'website',
+    images: ['/opengraph-image'],
   },
   themeColor: '#ffffff',
   appleWebApp: {

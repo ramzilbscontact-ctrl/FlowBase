@@ -3,6 +3,7 @@ export const runtime = 'nodejs'
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { Client as NotionClient } from '@notionhq/client'
+import { decrypt } from '@/lib/google/encrypt'
 
 type ExportType = 'contacts' | 'deals' | 'invoices'
 
@@ -24,6 +25,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Notion not connected. Please connect Notion first.' }, { status: 400 })
   }
 
+  const accessToken = decrypt(tokenRow.access_token)
+
   const body = await request.json()
   const exportType: ExportType = body.type
   const notionDatabaseId: string | undefined = body.notion_database_id
@@ -32,7 +35,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid export type. Must be contacts, deals, or invoices.' }, { status: 400 })
   }
 
-  const notion = new NotionClient({ auth: tokenRow.access_token })
+  const notion = new NotionClient({ auth: accessToken })
 
   try {
     // Fetch CRM data from Supabase

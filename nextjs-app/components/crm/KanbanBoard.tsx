@@ -38,13 +38,12 @@ interface Deal {
   companies?: { name: string } | null
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 interface KanbanBoardProps {
   deals: Deal[]
   stages: Stage[]
   onStageDrop: (dealId: string, newStageId: string) => void
   onDelete: (dealId: string) => void
-  onEdit: (deal: any) => void
+  onEdit: (deal: Deal) => void
   onCalendar?: (deal: Deal) => void
 }
 

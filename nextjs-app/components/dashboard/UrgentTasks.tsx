@@ -11,7 +11,7 @@ export function UrgentTasks() {
   const { data: tasks, isLoading } = useQuery({
     queryKey: ['dashboard', 'urgent-tasks'],
     queryFn: async () => {
-      const { data } = await (supabase as any)
+      const { data } = await supabase
         .from('tasks')
         .select('id, title, due_date, priority')
         .eq('completed', false)

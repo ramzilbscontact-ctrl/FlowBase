@@ -2,6 +2,7 @@ export const runtime = 'nodejs'
 
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { randomUUID } from 'node:crypto'
 
 export async function GET() {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? ''
@@ -21,7 +22,7 @@ export async function GET() {
   }
 
   const redirectUri = `${siteUrl}/api/notion/callback`
-  const state = user.id // simple state for CSRF; in production use a signed token
+  const state = randomUUID()
 
   const authUrl = new URL('https://api.notion.com/v1/oauth/authorize')
   authUrl.searchParams.set('client_id', clientId)
@@ -30,5 +31,14 @@ export async function GET() {
   authUrl.searchParams.set('redirect_uri', redirectUri)
   authUrl.searchParams.set('state', state)
 
-  return NextResponse.redirect(authUrl.toString())
+  const response = NextResponse.redirect(authUrl.toString())
+  response.cookies.set('notion_oauth_state', state, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'lax',
+    maxAge: 600, // 10 minutes
+    path: '/api/notion/callback',
+  })
+
+  return response
 }

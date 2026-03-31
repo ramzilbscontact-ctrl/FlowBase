@@ -30,8 +30,7 @@ export function Logo({ className, size = 32, withText = false, dark = false }: L
           'font-bold text-lg tracking-tight',
           dark ? 'text-white' : 'text-slate-900'
         )}>
-          flow<span className={dark ? 'text-slate-400' : 'text-slate-400'}>base</span>
-          <span className={dark ? 'text-white' : 'text-slate-900'}>.</span>
+          Get<span className={dark ? 'text-indigo-400' : 'text-indigo-600'}>Agenzia</span>
         </span>
       )}
     </div>

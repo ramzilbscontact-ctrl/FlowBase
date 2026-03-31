@@ -43,10 +43,11 @@ export function buildOAuthClient() {
   return new google.auth.OAuth2(clientId, clientSecret, redirectUri)
 }
 
-export function buildOAuthUrl(oauthClient: ReturnType<typeof buildOAuthClient>) {
+export function buildOAuthUrl(oauthClient: ReturnType<typeof buildOAuthClient>, state?: string) {
   return oauthClient.generateAuthUrl({
     access_type: 'offline',
     prompt: 'consent', // Required — ensures refresh_token is always returned
+    state,
     scope: [
       'https://www.googleapis.com/auth/gmail.readonly',
       'https://www.googleapis.com/auth/gmail.send',
