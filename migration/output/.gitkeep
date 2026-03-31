@@ -1,2 +1,0 @@
-# SQL output files are generated here by migration/migrate.py
-# They are gitignored — do not commit real migration SQL files with production data.
